@@ -32,6 +32,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.RobotHardware;
@@ -75,11 +77,16 @@ public class StandardTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        double drive        = 0;
-        double turn         = 0;
-        double arm          = 0;
-        double handOffset   = 0;
+        double slowmodeMult = 0.4;
+        boolean usingSlowMode = false;
 
+//        DcMotor frontLeft = hardwareMap.dcMotor.get("front_Left");
+//        DcMotor backLeft = hardwareMap.dcMotor.get("back_Left");
+//        DcMotor frontRight = hardwareMap.dcMotor.get("front_Right");
+//        DcMotor backRight = hardwareMap.dcMotor.get("back_Right");
+
+//        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+//        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
 
@@ -90,47 +97,42 @@ public class StandardTeleOp extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            // Run wheels in POV mode (note: The joystick goes negative when pushed forward, so negate it)
-            // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
-            // This way it's also easy to just drive straight, or just turn.
-            drive = -gamepad1.left_stick_y;
-            turn  =  gamepad1.right_stick_x;
+            //Drivechain
 
-            // Combine drive and turn for blended motion. Use RobotHardware class
+            if(gamepad1.left_bumper){
+                usingSlowMode = !usingSlowMode;
+            }
 
-            // Use gamepad left & right Bumpers to open and close the claw
-            // Use the SERVO constants defined in RobotHardware class.
-            // Each time around the loop, the servos will move by a small amount.
-            // Limit the total offset to half of the full travel range
-            if (gamepad1.right_bumper)
-                handOffset += robot.HAND_SPEED;
-            else if (gamepad1.left_bumper)
-                handOffset -= robot.HAND_SPEED;
-            handOffset = Range.clip(handOffset, -0.5, 0.5);
+            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
+            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = gamepad1.right_stick_x;
 
-            // Move both servos to new position.  Use RobotHardware class
+            // Denominator is the largest motor power (absolute value) or 1
+            // This ensures all the powers maintain the same ratio,
+            // but only if at least one is out of the range [-1, 1]
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double frontLeftPower = (y + x + rx) / denominator;
+            double backLeftPower = (y - x + rx) / denominator;
+            double frontRightPower = (y - x - rx) / denominator;
+            double backRightPower = (y + x - rx) / denominator;
 
-            // Use gamepad buttons to move arm up (Y) and down (A)
-            // Use the MOTOR constants defined in RobotHardware class.
-            if (gamepad1.y)
-                arm = robot.ARM_UP_POWER;
-            else if (gamepad1.a)
-                arm = robot.ARM_DOWN_POWER;
-            else
-                arm = 0;
+            if(usingSlowMode) {
+                frontLeftPower *= slowmodeMult;
+                backLeftPower *= slowmodeMult;
+                frontRightPower *= slowmodeMult;
+                backRightPower *= slowmodeMult;
+            }
 
+            robot.frontLeft.setPower(frontLeftPower);
+            robot.backLeft.setPower(backLeftPower);
+            robot.frontRight.setPower(frontRightPower);
+            robot.backRight.setPower(backRightPower);
 
             // Send telemetry messages to explain controls and show robot status
             telemetry.addData("Drive", "Left Stick");
-            telemetry.addData("Turn", "Right Stick");
+            telemetry.addData("Turn", "Left Stick");
             telemetry.addData("Arm Up/Down", "Y & A Buttons");
             telemetry.addData("Hand Open/Closed", "Left and Right Bumpers");
-            telemetry.addData("-", "-------");
-
-            telemetry.addData("Drive Power", "%.2f", drive);
-            telemetry.addData("Turn Power",  "%.2f", turn);
-            telemetry.addData("Arm Power",  "%.2f", arm);
-            telemetry.addData("Hand Position",  "Offset = %.2f", handOffset);
             telemetry.update();
 
             // Pace this loop so hands move at a reasonable speed.

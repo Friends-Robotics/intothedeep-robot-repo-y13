@@ -41,12 +41,10 @@ public class RobotHardware {
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    private DcMotor frontLeft   = null;
-    private DcMotor frontRight  = null;
-    private DcMotor backLeft = null;
-    private DcMotor backRight = null;
-//    private Servo   leftHand = null;
-//    private Servo   rightHand = null;
+    protected DcMotor frontLeft   = null;
+    protected DcMotor frontRight  = null;
+    protected DcMotor backLeft = null;
+    protected DcMotor backRight = null;
 
     // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
     public static final double MID_SERVO       =  0.5 ;
@@ -76,19 +74,19 @@ public class RobotHardware {
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
 
-        // AP: As long as all the left motors' directions are different from the right ones it should be fine
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
-
-        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
-
-        // AP: We have encoders but I'm not sure if we're gonna use them... probably yes
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        // AP: As long as all the left motors' directions are different from the right ones it should be fine
+        frontLeft.setDirection(DcMotor.Direction.FORWARD);
+        backLeft.setDirection(DcMotor.Direction.FORWARD);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
+//
+//        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
+//
+//        // AP: We have encoders but I'm not sure if we're gonna use them
+//        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Define and initialize ALL installed servos.
 //        leftHand = myOpMode.hardwareMap.get(Servo.class, "left_hand");
@@ -116,14 +114,6 @@ public class RobotHardware {
 //
 //        // Use existing function to drive both wheels.
 //        setDrivePower(left, right);
-//    }
-
-
-    // AP: We will revamp this when we have some time to test
-//    public void setDrivePower(double leftWheel, double rightWheel) {
-//        // Output the values to the motor drives.
-//        leftDrive.setPower(leftWheel);
-//        rightDrive.setPower(rightWheel);
 //    }
 
 
