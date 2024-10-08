@@ -94,7 +94,7 @@ public class RobotHardware {
 //        leftHand.setPosition(MID_SERVO);
 //        rightHand.setPosition(MID_SERVO);
 
-        myOpMode.telemetry.addData(">", "Hardware Initialized");
+        myOpMode.telemetry.addLine("Hardware Initialized");
         myOpMode.telemetry.update();
     }
 
