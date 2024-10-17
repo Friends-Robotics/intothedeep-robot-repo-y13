@@ -77,8 +77,7 @@ public class StandardTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        double slowmodeMult = 0.4;
-        boolean usingSlowMode = false;
+        double slowmodeMult;
 
 //        DcMotor frontLeft = hardwareMap.dcMotor.get("front_Left");
 //        DcMotor backLeft = hardwareMap.dcMotor.get("back_Left");
@@ -100,37 +99,55 @@ public class StandardTeleOp extends LinearOpMode {
             //Drivechain
 
             if(gamepad1.left_bumper){
-                usingSlowMode = !usingSlowMode;
+                slowmodeMult = 0.4;
+            }
+            else{
+                slowmodeMult = 1;
             }
 
             double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
-            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio,
             // but only if at least one is out of the range [-1, 1]
+
+            //AP: Don't even ask me how this works, I'm not a vectors wizard.... gm0.com
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             double frontLeftPower = (y + x + rx) / denominator;
             double backLeftPower = (y - x + rx) / denominator;
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-            if(usingSlowMode) {
-                frontLeftPower *= slowmodeMult;
-                backLeftPower *= slowmodeMult;
-                frontRightPower *= slowmodeMult;
-                backRightPower *= slowmodeMult;
-            }
+
+            frontLeftPower *= slowmodeMult;
+            backLeftPower *= slowmodeMult;
+            frontRightPower *= slowmodeMult * 1.05;
+            backRightPower *= slowmodeMult;
+
 
             robot.frontLeft.setPower(frontLeftPower);
             robot.backLeft.setPower(backLeftPower);
             robot.frontRight.setPower(frontRightPower);
             robot.backRight.setPower(backRightPower);
 
+            //Arm
+            if(gamepad2.square){
+                robot.intakeMotor.setPower(0.6);
+            }
+            else{
+                robot.intakeMotor.setPower(0);
+            }
+
+            if(gamepad2.circle){
+                robot.intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            }
+            if(gamepad2.triangle){
+                robot.intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+            }
+
             // Send telemetry messages to explain controls and show robot status
-            telemetry.addData("Drive", "Left Stick");
-            telemetry.addData("Turn", "Left Stick");
             telemetry.addData("Arm Up/Down", "Y & A Buttons");
             telemetry.addData("Hand Open/Closed", "Left and Right Bumpers");
             telemetry.update();

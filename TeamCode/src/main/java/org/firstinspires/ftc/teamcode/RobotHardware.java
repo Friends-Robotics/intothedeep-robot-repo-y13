@@ -29,8 +29,10 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.motors.RevRoboticsCoreHexMotor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
@@ -45,6 +47,8 @@ public class RobotHardware {
     protected DcMotor frontRight  = null;
     protected DcMotor backLeft = null;
     protected DcMotor backRight = null;
+
+    protected DcMotor intakeMotor = null;
 
     // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
     public static final double MID_SERVO       =  0.5 ;
@@ -69,16 +73,18 @@ public class RobotHardware {
         frontRight = myOpMode.hardwareMap.get(DcMotor.class, "front_right");
         backLeft = myOpMode.hardwareMap.get(DcMotor.class, "back_left");
         backRight = myOpMode.hardwareMap.get(DcMotor.class, "back_right");
+        intakeMotor = myOpMode.hardwareMap.get(DcMotorEx.class, "intake");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
 
 //        // AP: As long as all the left motors' directions are different from the right ones it should be fine
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.FORWARD);
+        frontLeft.setDirection(DcMotor.Direction.FORWARD);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.REVERSE);
-        backRight.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.FORWARD);
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
 //
 //        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
 //
