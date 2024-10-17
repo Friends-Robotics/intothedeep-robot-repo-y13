@@ -1,19 +1,15 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.General;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.RobotHardware;
 @TeleOp(name="StandardTeleOp", group="Robot")
 public class StandardTeleOp extends LinearOpMode {
 
     // Create a RobotHardware object to be used to access robot hardware.
     // Prefix any hardware functions with "robot." to access this class.
-    org.firstinspires.ftc.teamcode.RobotHardware robot = new RobotHardware(this);
+    RobotHardware robot = new RobotHardware(this);
 
     @Override
     public void runOpMode() {
