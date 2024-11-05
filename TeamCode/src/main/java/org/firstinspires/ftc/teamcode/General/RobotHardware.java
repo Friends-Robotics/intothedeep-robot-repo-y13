@@ -80,8 +80,7 @@ public class RobotHardware {
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
-        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-//
+
 //        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
 //
 //        // AP: We have encoders but I'm not sure if we're gonna use them
@@ -89,12 +88,6 @@ public class RobotHardware {
 //        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        // Define and initialize ALL installed servos.
-//        leftHand = myOpMode.hardwareMap.get(Servo.class, "left_hand");
-//        rightHand = myOpMode.hardwareMap.get(Servo.class, "right_hand");
-//        leftHand.setPosition(MID_SERVO);
-//        rightHand.setPosition(MID_SERVO);
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
