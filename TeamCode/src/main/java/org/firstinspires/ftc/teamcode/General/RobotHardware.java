@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode.General;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class RobotHardware {
 
@@ -44,13 +45,8 @@ public class RobotHardware {
     public DcMotor backLeft = null;
     public DcMotor backRight = null;
 
-    protected DcMotor intakeMotor = null;
-
-    // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
-    public static final double MID_SERVO       =  0.5 ;
-    public static final double HAND_SPEED      =  0.02 ;  // sets rate to move servo
-    public static final double ARM_UP_POWER    =  0.45 ;
-    public static final double ARM_DOWN_POWER  = -0.45 ;
+    public DcMotor intakeMotor = null;
+    public Servo hingeMotor = null;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public RobotHardware(LinearOpMode opmode) {
@@ -70,6 +66,9 @@ public class RobotHardware {
         backLeft = myOpMode.hardwareMap.get(DcMotor.class, "back_left");
         backRight = myOpMode.hardwareMap.get(DcMotor.class, "back_right");
         intakeMotor = myOpMode.hardwareMap.get(DcMotorEx.class, "intake");
+        hingeMotor = myOpMode.hardwareMap.get(Servo.class, "hinge");
+
+
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -81,50 +80,9 @@ public class RobotHardware {
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
 
-//        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
-//
-//        // AP: We have encoders but I'm not sure if we're gonna use them
-//        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
     }
-
-    // AP: We don't need this because we have fancy wheels
-//    public void driveRobot(double Drive, double Turn) {
-//        // Combine drive and turn for blended motion.
-//        double left  = Drive + Turn;
-//        double right = Drive - Turn;
-//
-//        // Scale the values so neither exceed +/- 1.0
-//        double max = Math.max(Math.abs(left), Math.abs(right));
-//        if (max > 1.0)
-//        {
-//            left /= max;
-//            right /= max;
-//        }
-//
-//        // Use existing function to drive both wheels.
-//        setDrivePower(left, right);
-//    }
-
-
-    //AP: This is all servo stuff that we can't make use of yet
-//    public void setArmPower(double power) {
-//        armMotor.setPower(power);
-//    }
-//
-//    /**
-//     * Send the two hand-servos to opposing (mirrored) positions, based on the passed offset.
-//     *
-//     * @param offset
-//     */
-//    public void setHandPositions(double offset) {
-//        offset = Range.clip(offset, -0.5, 0.5);
-//        leftHand.setPosition(MID_SERVO + offset);
-//        rightHand.setPosition(MID_SERVO - offset);
-//    }
 }

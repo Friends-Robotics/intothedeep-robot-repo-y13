@@ -36,9 +36,28 @@ public class ArmTeleOp extends LinearOpMode {
                 robot.intakeMotor.setPower(0);
             }
 
+
+
+
+
+            //FUTURE AARON, YOU NEED TO ADD A SERVO CALLED 'hinge' TO THE HARDWARE MAP OR THIS WILL NOT WORK, YOU PLONKER
+
+
+
+
+
+
+            if(gamepad2.circle){
+                robot.hingeMotor.setPosition(1);
+            }
+            if(gamepad2.triangle){
+                robot.hingeMotor.setPosition(0);
+            }
+
             // Send telemetry messages to explain controls and show robot status
             telemetry.addData("INTAKE POWER", robot.intakeMotor.getPower());
             telemetry.addData("INTAKE DIRECTION", robot.intakeMotor.getDirection());
+            telemetry.addData("HINGE POS", robot.hingeMotor.getDirection());
             telemetry.update();
 
             // Pace this loop so hands move at a reasonable speed.

@@ -2,12 +2,14 @@ package org.firstinspires.ftc.teamcode.ArmTesting;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class ArmRobotHardware {
 
     /* Declare OpMode members. */
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
-    protected DcMotor intakeMotor = null;
+    public DcMotor intakeMotor = null;
+    public Servo hingeMotor = null;
 
     public ArmRobotHardware(LinearOpMode opmode) {
         myOpMode = opmode;
