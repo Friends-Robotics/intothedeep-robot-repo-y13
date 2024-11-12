@@ -9,7 +9,8 @@ public class ArmRobotHardware {
     /* Declare OpMode members. */
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
     public DcMotor intakeMotor = null;
-    public Servo hingeMotor = null;
+    public Servo slideMotor = null;
+    public Servo flipMotor = null;
 
     public ArmRobotHardware(LinearOpMode opmode) {
         myOpMode = opmode;
@@ -24,6 +25,8 @@ public class ArmRobotHardware {
     public void init() {
         // Define and Initialize Motors (note: need to use reference to actual OpMode).
         intakeMotor = myOpMode.hardwareMap.get(DcMotorEx.class, "intake");
+        slideMotor = myOpMode.hardwareMap.get(Servo.class, "slide");
+        flipMotor = myOpMode.hardwareMap.get(Servo.class, "flip");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.

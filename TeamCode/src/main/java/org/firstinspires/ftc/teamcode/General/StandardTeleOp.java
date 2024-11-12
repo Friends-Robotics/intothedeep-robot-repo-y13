@@ -74,11 +74,19 @@ public class StandardTeleOp extends LinearOpMode {
                 robot.intakeMotor.setPower(0);
             }
 
-            if(gamepad2.circle){
-                robot.hingeMotor.setPosition(1);
+            if(gamepad2.right_bumper){
+                robot.slideMotor.setPosition(1);
             }
-            if(gamepad2.triangle){
-                robot.hingeMotor.setPosition(0);
+            else if(gamepad2.left_bumper){
+                robot.slideMotor.setPosition(-1);
+            }
+
+
+            if(gamepad2.circle){
+                robot.flipMotor.setPosition(1);
+            }
+            else if(gamepad2.triangle){
+                robot.flipMotor.setPosition(-1);
             }
 
             // Send telemetry messages to explain controls and show robot status
@@ -89,7 +97,7 @@ public class StandardTeleOp extends LinearOpMode {
             telemetry.addData("--------------------------------------------------", "");
             telemetry.addData("INTAKE POWER", robot.intakeMotor.getPower());
             telemetry.addData("INTAKE DIRECTION", robot.intakeMotor.getDirection());
-            telemetry.addData("HINGE POS", robot.hingeMotor.getDirection());
+            telemetry.addData("FLIP MOTOR POS", robot.flipMotor.getDirection());
             telemetry.update();
 
             // Pace this loop so hands move at a reasonable speed.
