@@ -39,10 +39,10 @@ public class RobotHardware {
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    protected DcMotor frontLeft   = null;
-    protected DcMotor frontRight  = null;
-    protected DcMotor backLeft = null;
-    protected DcMotor backRight = null;
+    public DcMotor frontLeft   = null;
+    public DcMotor frontRight  = null;
+    public DcMotor backLeft = null;
+    public DcMotor backRight = null;
 
     protected DcMotor intakeMotor = null;
 
