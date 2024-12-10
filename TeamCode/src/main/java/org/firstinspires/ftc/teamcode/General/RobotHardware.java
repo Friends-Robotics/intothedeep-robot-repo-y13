@@ -46,8 +46,10 @@ public class RobotHardware {
     public DcMotor backRight = null;
 
     public DcMotor intakeMotor = null;
-    public Servo slideMotor = null;
-    public Servo flipMotor = null;
+    public Servo rightSlideMotor = null;
+    public Servo leftSlideMotor = null;
+    public Servo rightFlipMotor = null;
+    public Servo leftFlipMotor = null;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public RobotHardware(LinearOpMode opmode) {
@@ -67,8 +69,10 @@ public class RobotHardware {
         backLeft = myOpMode.hardwareMap.get(DcMotor.class, "back_left");
         backRight = myOpMode.hardwareMap.get(DcMotor.class, "back_right");
         intakeMotor = myOpMode.hardwareMap.get(DcMotorEx.class, "intake");
-        slideMotor = myOpMode.hardwareMap.get(Servo.class, "slide");
-        flipMotor = myOpMode.hardwareMap.get(Servo.class, "flip");
+        rightSlideMotor = myOpMode.hardwareMap.get(Servo.class, "rSlide");
+        leftSlideMotor = myOpMode.hardwareMap.get(Servo.class, "lSlide");
+        rightFlipMotor = myOpMode.hardwareMap.get(Servo.class, "rFlip");
+        leftFlipMotor = myOpMode.hardwareMap.get(Servo.class, "lFlip");
 
 
 

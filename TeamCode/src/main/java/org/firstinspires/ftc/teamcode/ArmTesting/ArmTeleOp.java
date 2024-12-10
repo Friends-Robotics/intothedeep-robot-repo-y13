@@ -40,15 +40,12 @@ public class ArmTeleOp extends LinearOpMode {
 
 
 
-            //FUTURE AARON, YOU NEED TO ADD A SERVO CALLED 'hinge' TO THE HARDWARE MAP OR THIS WILL NOT WORK, YOU PLONKER
-            //... add this to the expansion hub
-
 
             if(gamepad2.right_bumper){
                 robot.slideMotor.setPosition(1);
             }
             else if(gamepad2.left_bumper){
-                robot.slideMotor.setPosition(-1);
+                robot.slideMotor.setPosition(0);
             }
 
 
