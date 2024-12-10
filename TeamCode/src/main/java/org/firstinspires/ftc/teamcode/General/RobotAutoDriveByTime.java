@@ -31,8 +31,6 @@ package org.firstinspires.ftc.teamcode.General;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
@@ -68,6 +66,8 @@ public class RobotAutoDriveByTime extends LinearOpMode {
 
     //time it all moves for
     static double time = 2;
+
+    static double timeRobotPauses = 0.5;
 
     static final double     FORWARD_SPEED = 0.6;
     static final double     TURN_SPEED    = 0.5;
@@ -260,7 +260,7 @@ public class RobotAutoDriveByTime extends LinearOpMode {
         AutonomousFunctions(0.0,0.0,0);
 
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
+        while (opModeIsActive() && (runtime.seconds() < timeRobotPauses)) {
             telemetry.addData("Path", "Leg 2: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
@@ -281,7 +281,7 @@ public class RobotAutoDriveByTime extends LinearOpMode {
         AutonomousFunctions(0.0,0.0,0);
 
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
+        while (opModeIsActive() && (runtime.seconds() < timeRobotPauses)) {
             telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
@@ -300,7 +300,7 @@ public class RobotAutoDriveByTime extends LinearOpMode {
         AutonomousFunctions(0.0,0.0,0);
 
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
+        while (opModeIsActive() && (runtime.seconds() < timeRobotPauses)) {
             telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
@@ -320,7 +320,7 @@ public class RobotAutoDriveByTime extends LinearOpMode {
         AutonomousFunctions(0.0,0.0,0);
 
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
+        while (opModeIsActive() && (runtime.seconds() < timeRobotPauses)) {
             telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
@@ -334,6 +334,8 @@ public class RobotAutoDriveByTime extends LinearOpMode {
         telemetry.update();
     }
     }
+
+
 
 
 
