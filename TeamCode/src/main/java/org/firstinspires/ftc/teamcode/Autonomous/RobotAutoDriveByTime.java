@@ -27,15 +27,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.General;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.General.RobotHardware;
 
 /*
  * This OpMode illustrates the concept of driving a path based on time.
@@ -67,8 +65,12 @@ public class RobotAutoDriveByTime extends LinearOpMode {
 
     RobotHardware robot = new RobotHardware(this);
 
-    static final double     FORWARD_SPEED = 0.6;//DEFO A PLACEHOLDER
-    static final long     SLEEPTIME    = 1000;//DEFO A PLACEHOLDER
+
+    //time it all moves for
+    static double time = 2;
+
+    static final double     FORWARD_SPEED = 0.6;
+    static final double     TURN_SPEED    = 0.5;
 
     @Override
     public void runOpMode() {
@@ -88,16 +90,94 @@ public class RobotAutoDriveByTime extends LinearOpMode {
 
         // Wait for the game to start (driver presses START)
         waitForStart();
-//        // Step 1:  Drive forward for 3 seconds
-//        //Peter:Should Move It Forward
-        //AP: Hopefully after I messed with it as well
-            DriveForward();
+//Put in functions
+        ForwordsFunction();
+        BackwordsFunction();
+        ForwordsFunction();
+        BackwordsFunction();
+        ForwordsFunction();
+        EndAutonomous();
+
+        sleep(10000);
+
+
+
+        // Step through each leg of the path, ensuring that the OpMode has not been stopped along the way.
+
+        // Step 1:  Drive forward for 3 seconds
+        //Peter:Should Move It Forward
+//        AutonomousFunctions(0.0,-1.0,0);
+//
+//        runtime.reset();
+//        while (opModeIsActive() && (runtime.seconds() < 1.0)) {
+//            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+//            telemetry.update();
+//        }
 //
 //        // Step 2:   Stop for a second
-
+//        AutonomousFunctions(0.0,0.0,0);
+//
+//        runtime.reset();
+//        while (opModeIsActive() && (runtime.seconds() < 1.0)) {
+//            telemetry.addData("Path", "Leg 2: %4.1f S Elapsed", runtime.seconds());
+//            telemetry.update();
+//        }
 //
 //        // Step 3:  Drive Backward for 1 Second
-            DriveBackward();
+//        AutonomousFunctions(0.0,1.0,0);
+//
+//        runtime.reset();
+//        while (opModeIsActive() && (runtime.seconds() < 1.0)) {
+//            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+//            telemetry.update();
+//        }
+////Stop
+//        AutonomousFunctions(0.0,0.0,0);
+//
+//        runtime.reset();
+//        while (opModeIsActive() && (runtime.seconds() < 1.0)) {
+//            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+//            telemetry.update();
+//        }
+//
+//        // Step 4:  SideWays
+//        AutonomousFunctions(1.0,0.0,0);
+//        runtime.reset();
+//        while (opModeIsActive() && (runtime.seconds() < 1.0)) {
+//            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+//            telemetry.update();
+//        }
+//
+//        //Stop
+//        AutonomousFunctions(0.0,0.0,0);
+//
+//        runtime.reset();
+//        while (opModeIsActive() && (runtime.seconds() < 1.0)) {
+//            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+//            telemetry.update();
+//        }
+//
+//        AutonomousFunctions(-1.0,0.0,0);
+//
+//
+//        runtime.reset();
+//        while (opModeIsActive() && (runtime.seconds() < 1.0)) {
+//            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+//            telemetry.update();
+//        }
+//
+//       AutonomousFunctions(0.0,0.0,0);
+//
+//        telemetry.addData("Path", "Complete");
+//        telemetry.update();
+//        sleep(1000);
+
+
+
+
+
+
+
     }
 
     public void AutonomousFunctions(double X, double Y, double RX)
@@ -105,71 +185,157 @@ public class RobotAutoDriveByTime extends LinearOpMode {
         double slowmodeMult;
 
 
-        //Drive-chain
+            //Drivechain
 
-        slowmodeMult = 0.4;
-
-
-        double y = -Y; // Remember, Y stick value is reversed
-        double x = X;
-        double rx = RX;
-
-        // Denominator is the largest motor power (absolute value) or 1
-        // This ensures all the powers maintain the same ratio,
-        // but only if at least one is out of the range [-1, 1]
-
-        //AP: Don't even ask me how this works, I'm not a vectors wizard.... gm0.com
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = (y + x + rx) / denominator;
-        double backLeftPower = (y - x + rx) / denominator;
-        double frontRightPower = (y - x - rx) / denominator;
-        double backRightPower = (y + x - rx) / denominator;
+            slowmodeMult = 0.4;
 
 
-        frontLeftPower *= slowmodeMult;
-        backLeftPower *= slowmodeMult;
-        frontRightPower *= slowmodeMult * 1.05;//TWEAK THIS VALUE!!! LESS!!!
-        backRightPower *= slowmodeMult;
+            double y = -Y; // Remember, Y stick value is reversed
+            double x = X;
+            double rx = 0;
+
+            // Denominator is the largest motor power (absolute value) or 1
+            // This ensures all the powers maintain the same ratio,
+            // but only if at least one is out of the range [-1, 1]
+
+            //AP: Don't even ask me how this works, I'm not a vectors wizard.... gm0.com
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double frontLeftPower = (y + x + rx) / denominator;
+            double backLeftPower = (y - x + rx) / denominator;
+            double frontRightPower = (y - x - rx) / denominator;
+            double backRightPower = (y + x - rx) / denominator;
 
 
-        robot.frontLeft.setPower(frontLeftPower);
-        robot.backLeft.setPower(backLeftPower);
-        robot.frontRight.setPower(frontRightPower);
-        robot.backRight.setPower(backRightPower);
+            frontLeftPower *= slowmodeMult;
+            backLeftPower *= slowmodeMult;
+            frontRightPower *= slowmodeMult * 1.05;//TWEAK THIS VALUE!!! LESS!!!
+            backRightPower *= slowmodeMult;
 
-        // Send telemetry messages to explain controls and show robot status
-        //telemetry.addData("GAMEPAD 1 LEFT STICK Y", -gamepad1.left_stick_y);
-        // telemetry.addData("GAMEPAD 1 LEFT STICK X", gamepad1.left_stick_x);
-        // telemetry.addData("GAMEPAD 1 RIGHT STICK X", gamepad1.right_stick_x);
-        telemetry.addData("MOTOR STATUS", robot.backLeft.isBusy() && robot.frontLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy());
-        telemetry.addData("--------------------------------------------------", "");
-        //telemetry.addData("INTAKE POWER", robot.intakeMotor.getPower());
-        //telemetry.addData("INTAKE DIRECTION", robot.intakeMotor.getDirection());
+
+            robot.frontLeft.setPower(frontLeftPower);
+            robot.backLeft.setPower(backLeftPower);
+            robot.frontRight.setPower(frontRightPower);
+            robot.backRight.setPower(backRightPower);
+
+            //Arm
+
+//            if(gamepad2.square){
+//                robot.intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//                robot.intakeMotor.setPower(0.6);
+//            }
+//            else if(gamepad2.cross){
+//                robot.intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//                robot.intakeMotor.setPower(0.6);
+//            }
+//            else{
+//                robot.intakeMotor.setPower(0);
+//            }
+
+            // Send telemetry messages to explain controls and show robot status
+            //telemetry.addData("GAMEPAD 1 LEFT STICK Y", -gamepad1.left_stick_y);
+           // telemetry.addData("GAMEPAD 1 LEFT STICK X", gamepad1.left_stick_x);
+           // telemetry.addData("GAMEPAD 1 RIGHT STICK X", gamepad1.right_stick_x);
+            telemetry.addData("MOTOR STATUS", robot.backLeft.isBusy() && robot.frontLeft.isBusy() && robot.frontRight.isBusy() && robot.backRight.isBusy());
+            telemetry.addData("--------------------------------------------------", "");
+            //telemetry.addData("INTAKE POWER", robot.intakeMotor.getPower());
+            //telemetry.addData("INTAKE DIRECTION", robot.intakeMotor.getDirection());
+            telemetry.update();
+
+            // Pace this loop so hands move at a reasonable speed.
+            //sleep(50);
+        }
+
+
+    public void ForwordsFunction(){
+
+        AutonomousFunctions(0.0,-1.0,0);
+
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < time)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+        // Step 2:   Stop for a second
+        AutonomousFunctions(0.0,0.0,0);
+
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
+            telemetry.addData("Path", "Leg 2: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+
+
+    }
+
+    public void BackwordsFunction(){
+        AutonomousFunctions(0.0,1.0,0);
+
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < time)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+//Stop
+        AutonomousFunctions(0.0,0.0,0);
+
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+    }
+
+    public void RightFunction(){
+        AutonomousFunctions(1.0,0.0,0);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < time)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+        //Stop
+        AutonomousFunctions(0.0,0.0,0);
+
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+    }
+
+    public void LeftFunction(){
+        AutonomousFunctions(-1.0,0.0,0);
+
+
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < time)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+        AutonomousFunctions(0.0,0.0,0);
+
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+    }
+
+    public void EndAutonomous(){
+        AutonomousFunctions(0.0,0.0,0);
+
+        telemetry.addData("Path", "Complete");
         telemetry.update();
-
-        // Pace this loop so hands move at a reasonable speed.
-        //sleep(50);
+    }
     }
 
-    private void DriveForward(){
-        AutonomousFunctions(0,-FORWARD_SPEED,0);
-        sleep(SLEEPTIME);
-    }
-    private void DriveBackward(){
-        AutonomousFunctions(0,FORWARD_SPEED,0);
-        sleep(SLEEPTIME);
-    }
 
-    private void Rotate90CW(){
-        AutonomousFunctions(0,0,FORWARD_SPEED);
-        sleep(SLEEPTIME);
-    }
 
-    private void Rotate90ACW(){
-        AutonomousFunctions(0,0, -FORWARD_SPEED);
-        sleep(SLEEPTIME);
-    }
-
-}
 
 
