@@ -10,10 +10,10 @@ public class StandardTeleOp extends LinearOpMode {
     // Create a RobotHardware object to be used to access robot hardware.
     // Prefix any hardware functions with "robot." to access this class.
     RobotHardware robot = new RobotHardware(this);
+    static double slowmodeMult;
 
     @Override
     public void runOpMode() {
-        double slowmodeMult;
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
 
@@ -33,32 +33,7 @@ public class StandardTeleOp extends LinearOpMode {
                 slowmodeMult = 0.8;
             }
 
-            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
-            double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
-
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio,
-            // but only if at least one is out of the range [-1, 1]
-
-            //AP: Don't even ask me how this works, I'm not a vectors wizard.... gm0.com
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
-            double backRightPower = (y + x - rx) / denominator;
-
-
-            frontLeftPower *= slowmodeMult;
-            backLeftPower *= slowmodeMult;
-            frontRightPower *= slowmodeMult * 1.05;//TWEAK THIS VALUE!!! LESS!!!
-            backRightPower *= slowmodeMult;
-
-
-            robot.frontLeft.setPower(frontLeftPower);
-            robot.backLeft.setPower(backLeftPower);
-            robot.frontRight.setPower(frontRightPower);
-            robot.backRight.setPower(backRightPower);
+            DriveChain();
 
             //Arm
 
@@ -110,5 +85,34 @@ public class StandardTeleOp extends LinearOpMode {
             // Pace this loop so hands move at a reasonable speed.
             sleep(50);
         }
+    }
+
+    void DriveChain(){
+        double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
+        double x = gamepad1.left_stick_x;
+        double rx = gamepad1.right_stick_x;
+
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio,
+        // but only if at least one is out of the range [-1, 1]
+
+        //AP: Don't even ask me how this works, I'm not a vectors wizard.... gm0.com
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+        double frontLeftPower = (y + x + rx) / denominator;
+        double backLeftPower = (y - x + rx) / denominator;
+        double frontRightPower = (y - x - rx) / denominator;
+        double backRightPower = (y + x - rx) / denominator;
+
+
+        frontLeftPower *= slowmodeMult;
+        backLeftPower *= slowmodeMult;
+        frontRightPower *= slowmodeMult * 1.05;//TWEAK THIS VALUE!!! LESS!!!
+        backRightPower *= slowmodeMult;
+
+
+        robot.frontLeft.setPower(frontLeftPower);
+        robot.backLeft.setPower(backLeftPower);
+        robot.frontRight.setPower(frontRightPower);
+        robot.backRight.setPower(backRightPower);
     }
 }
