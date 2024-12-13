@@ -30,8 +30,10 @@
 package org.firstinspires.ftc.teamcode.General;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class RobotHardware {
@@ -50,6 +52,7 @@ public class RobotHardware {
     public Servo leftSlideMotor = null;
     public Servo rightFlipMotor = null;
     public Servo leftFlipMotor = null;
+    public ColorSensor colorSensor = null;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public RobotHardware(LinearOpMode opmode) {
@@ -73,7 +76,7 @@ public class RobotHardware {
         leftSlideMotor = myOpMode.hardwareMap.get(Servo.class, "lSlide");
         rightFlipMotor = myOpMode.hardwareMap.get(Servo.class, "rFlip");
         leftFlipMotor = myOpMode.hardwareMap.get(Servo.class, "lFlip");
-
+        colorSensor = myOpMode.hardwareMap.get(ColorSensor.class, "cs");
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -82,8 +85,8 @@ public class RobotHardware {
 
 //        // AP: As long as all the left motors' directions are different from the right ones it should be fine
         frontLeft.setDirection(DcMotor.Direction.FORWARD);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        backLeft.setDirection(DcMotor.Direction.FORWARD);
+        frontRight.setDirection(DcMotor.Direction.FORWARD);
         backRight.setDirection(DcMotor.Direction.FORWARD);
 
 
