@@ -52,7 +52,7 @@ public class RobotHardware {
     public Servo leftSlideMotor = null;
     public Servo rightFlipMotor = null;
     public Servo leftFlipMotor = null;
-    public ColorSensor colorSensor = null;
+//    public ColorSensor colorSensor = null;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public RobotHardware(LinearOpMode opmode) {
@@ -71,12 +71,12 @@ public class RobotHardware {
         frontRight = myOpMode.hardwareMap.get(DcMotor.class, "front_right");
         backLeft = myOpMode.hardwareMap.get(DcMotor.class, "back_left");
         backRight = myOpMode.hardwareMap.get(DcMotor.class, "back_right");
-        intakeMotor = myOpMode.hardwareMap.get(DcMotorEx.class, "intake");
+        intakeMotor = myOpMode.hardwareMap.get(DcMotor.class, "intake");
         rightSlideMotor = myOpMode.hardwareMap.get(Servo.class, "rSlide");
         leftSlideMotor = myOpMode.hardwareMap.get(Servo.class, "lSlide");
         rightFlipMotor = myOpMode.hardwareMap.get(Servo.class, "rFlip");
         leftFlipMotor = myOpMode.hardwareMap.get(Servo.class, "lFlip");
-        colorSensor = myOpMode.hardwareMap.get(ColorSensor.class, "cs");
+//        colorSensor = myOpMode.hardwareMap.get(ColorSensor.class, "cs");
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -85,11 +85,12 @@ public class RobotHardware {
 
 //        // AP: As long as all the left motors' directions are different from the right ones it should be fine
         frontLeft.setDirection(DcMotor.Direction.FORWARD);
-        backLeft.setDirection(DcMotor.Direction.FORWARD);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
-
-
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlideMotor.scaleRange(0.43,0.67);
+        leftSlideMotor.scaleRange(0.33,0.57);
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();

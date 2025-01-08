@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.General;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
@@ -26,89 +27,53 @@ public class StandardTeleOp extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
+
             //Drivechain
 
             if(gamepad1.circle){
-                slowmodeMult = 0.4;
+                slowmodeMult = 0.2;
             }
             else{
-                slowmodeMult = 0.8;
+                slowmodeMult = 0.4;
             }
 
             DriveChain();
 
-            //PPLLLLLEEEEEEAAAAASSSSSEEEE
-            if(gamepad1.dpad_right){
-                //PLEASE WORK
-                robot.backRight.setPower(0.6 *slowmodeMult);
-                robot.frontLeft.setPower(0.6 *slowmodeMult);
-            } else if (gamepad1.dpad_left) {
-                //PLEASE WORK
-                robot.backRight.setPower(-0.6 * slowmodeMult);
-                robot.frontLeft.setPower(-0.6 * slowmodeMult);
-            }
-
             //Arm
 
             if(gamepad2.right_trigger > 0.2){
-                robot.intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-                robot.intakeMotor.setPower(0.3);
-            }
-            else if(gamepad2.triangle){
                 robot.intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
                 robot.intakeMotor.setPower(0.3);
+            }
+            else if(gamepad2.cross || gamepad2.left_trigger > 0.2){
+                robot.intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+                robot.intakeMotor.setPower(0.4);
             }
             else{
                 robot.intakeMotor.setPower(0);
             }
-//            //REVERSE IS SUCK
-//            //FORWARD IS SPIT
-//            if(gamepad2.square){
-//                robot.intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//                robot.intakeMotor.setPower(0.3);
-//            }
-//            else if(gamepad2.cross){
-//                robot.intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-//                robot.intakeMotor.setPower(0.3);
-//            }
-//            else{
-//                robot.intakeMotor.setPower(0);
-//            }
-//
+
             if(gamepad2.right_bumper){
-                robot.rightSlideMotor.setPosition(1);
-                robot.leftSlideMotor.setPosition(0);
-            }
-            else if(gamepad2.left_bumper){
                 robot.rightSlideMotor.setPosition(0);
                 robot.leftSlideMotor.setPosition(1);
             }
-
-            if(gamepad2.dpad_down){
-                robot.rightFlipMotor.setPosition(0.85);
-                robot.leftFlipMotor.setPosition(0.15);
+            else if(gamepad2.left_bumper){
+                robot.rightSlideMotor.setPosition(1);
+                robot.leftSlideMotor.setPosition(0);
             }
-            else if(gamepad2.dpad_up){
-                robot.rightFlipMotor.setPosition(0.14);//come back to this AP
-                robot.leftFlipMotor.setPosition(0.86);
+
+            if(gamepad2.circle){
+                robot.rightFlipMotor.setPosition(0.75);
+                robot.leftFlipMotor.setPosition(0.25);
+            }
+            else if(gamepad2.triangle){
+                robot.rightFlipMotor.setPosition(0);
+                robot.leftFlipMotor.setPosition(1);
             }
             else if(gamepad2.dpad_right){
                 robot.rightFlipMotor.setPosition(0.5);
                 robot.leftFlipMotor.setPosition(0.5);
             }
-
-
-
-
-
-
-            //!!!!!!!!!!!!robot.leftFlipMotor.close();!!!!!!!!!!!!
-
-
-
-
-
-
 
             // Send telemetry messages to explain controls and show robot status
             telemetry.addData("GAMEPAD 1 LEFT STICK Y", -gamepad1.left_stick_y);
@@ -121,10 +86,12 @@ public class StandardTeleOp extends LinearOpMode {
             telemetry.addData("FLIP MOTOR POS", robot.rightFlipMotor.getDirection());
             telemetry.addData("RIGHT TRIGGER STATUS", gamepad2.right_trigger);
             telemetry.addData("LEFT TRIGGER STATUS", gamepad2.left_trigger);
-            telemetry.addData("Light Detected", ((OpticalDistanceSensor) robot.colorSensor).getLightDetected());
-            telemetry.addData("COLOUR SENSOR R", robot.colorSensor.red());
-            telemetry.addData("COLOUR SENSOR G", robot.colorSensor.green());
-            telemetry.addData("COLOUR SENSOR B", robot.colorSensor.blue());
+            telemetry.addData("RSLIDE MOTOR STATUS", robot.rightSlideMotor.getPosition());
+            telemetry.addData("LSLIDE MOTOR STATUS", robot.leftSlideMotor.getPosition());
+//            telemetry.addData("Light Detected", ((OpticalDistanceSensor) robot.colorSensor).getLightDetected());
+//            telemetry.addData("COLOUR SENSOR R", robot.colorSensor.red());
+//            telemetry.addData("COLOUR SENSOR G", robot.colorSensor.green());
+//            telemetry.addData("COLOUR SENSOR B", robot.colorSensor.blue());
             telemetry.update();
 
             // Pace this loop so hands move at a reasonable speed.
@@ -151,7 +118,7 @@ public class StandardTeleOp extends LinearOpMode {
 
         frontLeftPower *= slowmodeMult;
         backLeftPower *= slowmodeMult;
-        frontRightPower *= slowmodeMult * 1.05;//TWEAK THIS VALUE!!! LESS!!!
+        frontRightPower *= slowmodeMult; //bad
         backRightPower *= slowmodeMult;
 
 
