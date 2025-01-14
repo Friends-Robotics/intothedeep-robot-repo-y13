@@ -13,7 +13,6 @@ public class StandardTeleOp extends LinearOpMode {
     // Prefix any hardware functions with "robot." to access this class.
     RobotHardware robot = new RobotHardware(this);
     static double slowmodeMult = 0;
-    static double currentIntakePower = 0;
 
     @Override
     public void runOpMode() {
@@ -32,6 +31,9 @@ public class StandardTeleOp extends LinearOpMode {
 
             if(gamepad1.circle){
                 slowmodeMult = 0.2;
+            }
+            else if(gamepad1.right_trigger > 0.2) {
+                slowmodeMult = 0.7;
             }
             else{
                 slowmodeMult = 0.4;
@@ -88,6 +90,8 @@ public class StandardTeleOp extends LinearOpMode {
             telemetry.addData("LEFT TRIGGER STATUS", gamepad2.left_trigger);
             telemetry.addData("RSLIDE MOTOR STATUS", robot.rightSlideMotor.getPosition());
             telemetry.addData("LSLIDE MOTOR STATUS", robot.leftSlideMotor.getPosition());
+            telemetry.addData("Gamepad2 Triangle", gamepad2.triangle);
+            telemetry.addData("Gamepad2 Circle", gamepad2.circle);
 //            telemetry.addData("Light Detected", ((OpticalDistanceSensor) robot.colorSensor).getLightDetected());
 //            telemetry.addData("COLOUR SENSOR R", robot.colorSensor.red());
 //            telemetry.addData("COLOUR SENSOR G", robot.colorSensor.green());
