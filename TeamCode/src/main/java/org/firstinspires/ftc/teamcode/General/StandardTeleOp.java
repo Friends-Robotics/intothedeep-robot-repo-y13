@@ -29,7 +29,7 @@ public class StandardTeleOp extends LinearOpMode {
 
             //Drivechain
 
-            if(gamepad1.circle){
+            if(gamepad1.left_trigger > 0.2){
                 slowmodeMult = 0.2;
             }
             else if(gamepad1.right_trigger > 0.2) {
@@ -42,6 +42,33 @@ public class StandardTeleOp extends LinearOpMode {
             DriveChain();
 
             //Arm
+
+            if(gamepad1.right_bumper){
+                robot.leftViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
+                robot.rightViperSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+
+                robot.leftViperSlide.setPower(1);
+                robot.rightViperSlide.setPower(1);
+            }
+            else if (gamepad1.left_bumper) {
+                robot.leftViperSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+                robot.rightViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
+
+                robot.leftViperSlide.setPower(1);
+                robot.rightViperSlide.setPower(1);
+            }
+            else{
+                robot.leftViperSlide.setPower(0);
+                robot.rightViperSlide.setPower(0);
+            }
+
+            if(gamepad1.touchpad){
+                robot.leftViperSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+                robot.rightViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
+
+                robot.leftViperSlide.setPower(1);
+                robot.rightViperSlide.setPower(1);
+            }
 
             if(gamepad2.right_trigger > 0.2){
                 robot.intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);

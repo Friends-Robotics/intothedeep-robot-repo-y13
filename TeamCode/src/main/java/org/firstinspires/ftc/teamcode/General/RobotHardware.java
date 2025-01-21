@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.General;
 
+import com.qualcomm.hardware.motors.GoBILDA5202Series;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -52,6 +53,8 @@ public class RobotHardware {
     public Servo leftSlideMotor = null;
     public Servo rightFlipMotor = null;
     public Servo leftFlipMotor = null;
+    public DcMotor leftViperSlide = null;
+    public DcMotor rightViperSlide = null;
 //    public ColorSensor colorSensor = null;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
@@ -76,6 +79,8 @@ public class RobotHardware {
         leftSlideMotor = myOpMode.hardwareMap.get(Servo.class, "lSlide");
         rightFlipMotor = myOpMode.hardwareMap.get(Servo.class, "rFlip");
         leftFlipMotor = myOpMode.hardwareMap.get(Servo.class, "lFlip");
+        leftViperSlide = myOpMode.hardwareMap.get(DcMotor.class, "lvs");
+        rightViperSlide = myOpMode.hardwareMap.get(DcMotor.class, "rvs");
 //        colorSensor = myOpMode.hardwareMap.get(ColorSensor.class, "cs");
 
 
@@ -91,6 +96,8 @@ public class RobotHardware {
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightSlideMotor.scaleRange(0.43,0.67);
         leftSlideMotor.scaleRange(0.33,0.57);
+        leftViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
