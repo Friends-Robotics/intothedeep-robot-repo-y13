@@ -48,7 +48,7 @@ enum IntakeMotorStates{
 public class RobotHardware {
 
     /* Declare OpMode members. */
-    private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
+    private final LinearOpMode myOpMode;   // gain access to methods in the calling OpMode.
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     private DcMotor frontLeft   = null;
@@ -105,6 +105,19 @@ public class RobotHardware {
         leftViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+
+        // Set initial positions for servos
+        rightSlideMotor.setPosition(1);  // Retracted
+        leftSlideMotor.setPosition(0);   // Retracted
+
+        rightFlipMotor.setPosition(0.55); // Default position
+        leftFlipMotor.setPosition(0.45);  // Default position
+
+        myOpMode.telemetry.addData(">", "Hardware Initialized");
+        myOpMode.telemetry.update();
+
+
+
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
     }
@@ -152,15 +165,18 @@ public class RobotHardware {
 
                 leftViperSlide.setPower(1);
                 rightViperSlide.setPower(1);
+                break;
             case DOWNWARDS:
                 leftViperSlide.setDirection(DcMotorSimple.Direction.FORWARD); //Goes down
                 rightViperSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
                 leftViperSlide.setPower(1);
                 rightViperSlide.setPower(1);
+                break;
             case NONE:
                 leftViperSlide.setPower(0);
                 rightViperSlide.setPower(0);
+                break;
         }
     }
 
@@ -169,11 +185,14 @@ public class RobotHardware {
             case IN:
                 intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
                 intakeMotor.setPower(0.3);
+                break;
             case OUT:
                 intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
                 intakeMotor.setPower(0.4);
+                break;
             case NONE:
                 intakeMotor.setPower(0);
+                break;
         }
     }
 
