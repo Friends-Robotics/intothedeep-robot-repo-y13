@@ -39,6 +39,14 @@ public class StandardTeleOp extends LinearOpMode {
                 slowmodeMult = 0.4;
             }
 
+            if(gamepad1.cross){
+                robot.viperSlideClaw.setPosition(1);
+            }
+            else if(gamepad1.square){
+                robot.viperSlideClaw.setPosition(0.1);
+            }
+
+
             DriveChain();
 
             //Arm
@@ -92,8 +100,8 @@ public class StandardTeleOp extends LinearOpMode {
             }
 
             if(gamepad2.circle){
-                robot.rightFlipMotor.setPosition(0.75);
-                robot.leftFlipMotor.setPosition(0.25);
+                robot.rightFlipMotor.setPosition(0.55);
+                robot.leftFlipMotor.setPosition(0.45);
             }
             else if(gamepad2.triangle){
                 robot.rightFlipMotor.setPosition(0);

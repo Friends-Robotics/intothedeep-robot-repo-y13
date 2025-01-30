@@ -55,6 +55,7 @@ public class RobotHardware {
     public Servo leftFlipMotor = null;
     public DcMotor leftViperSlide = null;
     public DcMotor rightViperSlide = null;
+    public Servo viperSlideClaw = null;
 //    public ColorSensor colorSensor = null;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
@@ -81,6 +82,8 @@ public class RobotHardware {
         leftFlipMotor = myOpMode.hardwareMap.get(Servo.class, "lFlip");
         leftViperSlide = myOpMode.hardwareMap.get(DcMotor.class, "lvs");
         rightViperSlide = myOpMode.hardwareMap.get(DcMotor.class, "rvs");
+        viperSlideClaw = myOpMode.hardwareMap.get(Servo.class, "vsclaw");
+
 //        colorSensor = myOpMode.hardwareMap.get(ColorSensor.class, "cs");
 
 
