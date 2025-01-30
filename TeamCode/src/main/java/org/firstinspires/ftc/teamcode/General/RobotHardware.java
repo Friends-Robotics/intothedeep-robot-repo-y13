@@ -29,33 +29,41 @@
 
 package org.firstinspires.ftc.teamcode.General;
 
-import com.qualcomm.hardware.motors.GoBILDA5202Series;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+enum ViperSlideDirections {
+    UPWARDS,
+    DOWNWARDS,
+    NONE
+}
+
+enum IntakeMotorStates{
+    IN,
+    OUT,
+    NONE
+}
 public class RobotHardware {
 
     /* Declare OpMode members. */
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    public DcMotor frontLeft   = null;
-    public DcMotor frontRight  = null;
-    public DcMotor backLeft = null;
-    public DcMotor backRight = null;
+    private DcMotor frontLeft   = null;
+    private DcMotor frontRight  = null;
+    private DcMotor backLeft = null;
+    private DcMotor backRight = null;
 
-    public DcMotor intakeMotor = null;
-    public Servo rightSlideMotor = null;
-    public Servo leftSlideMotor = null;
-    public Servo rightFlipMotor = null;
-    public Servo leftFlipMotor = null;
-    public DcMotor leftViperSlide = null;
-    public DcMotor rightViperSlide = null;
-    public Servo viperSlideClaw = null;
+    private DcMotor intakeMotor = null;
+    private Servo rightSlideMotor = null;
+    private Servo leftSlideMotor = null;
+    private Servo rightFlipMotor = null;
+    private Servo leftFlipMotor = null;
+    private DcMotor leftViperSlide = null;
+    private DcMotor rightViperSlide = null;
+    private Servo viperSlideClaw = null;
 //    public ColorSensor colorSensor = null;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
@@ -86,11 +94,6 @@ public class RobotHardware {
 
 //        colorSensor = myOpMode.hardwareMap.get(ColorSensor.class, "cs");
 
-
-        // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
-        // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
-        // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-
 //        // AP: As long as all the left motors' directions are different from the right ones it should be fine
         frontLeft.setDirection(DcMotor.Direction.FORWARD);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
@@ -104,5 +107,95 @@ public class RobotHardware {
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
+    }
+
+    public void DriveChain(double slowmodeMult, double y, double x, double rx){
+
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio,
+        // but only if at least one is out of the range [-1, 1]
+
+        //AP: Don't even ask me how this works, I'm not a vectors wizard.... gm0.com
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+        double frontLeftPower = (y + x + rx) / denominator;
+        double backLeftPower = (y - x + rx) / denominator;
+        double frontRightPower = (y - x - rx) / denominator;
+        double backRightPower = (y + x - rx) / denominator;
+
+
+        frontLeftPower *= slowmodeMult;
+        backLeftPower *= slowmodeMult;
+        frontRightPower *= slowmodeMult; //bad
+        backRightPower *= slowmodeMult;
+
+
+        frontLeft.setPower(frontLeftPower);
+        backLeft.setPower(backLeftPower);
+        frontRight.setPower(frontRightPower);
+        backRight.setPower(backRightPower);
+    }
+
+    public void SetClawPos(boolean clawClosed){
+        if(clawClosed){
+            viperSlideClaw.setPosition(0.1);
+        }
+        else{
+            viperSlideClaw.setPosition(1);
+        }
+    }
+
+    public void SetViperSlideMovement(ViperSlideDirections viperSlideMovement){
+        switch(viperSlideMovement){
+            case UPWARDS:
+                leftViperSlide.setDirection(DcMotorSimple.Direction.REVERSE); //Goes up
+                rightViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
+
+                leftViperSlide.setPower(1);
+                rightViperSlide.setPower(1);
+            case DOWNWARDS:
+                leftViperSlide.setDirection(DcMotorSimple.Direction.FORWARD); //Goes down
+                rightViperSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+
+                leftViperSlide.setPower(1);
+                rightViperSlide.setPower(1);
+            case NONE:
+                leftViperSlide.setPower(0);
+                rightViperSlide.setPower(0);
+        }
+    }
+
+    public void SetIntakeMotorMovement(IntakeMotorStates intakeMotorMovement){
+        switch(intakeMotorMovement){
+            case IN:
+                intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+                intakeMotor.setPower(0.3);
+            case OUT:
+                intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+                intakeMotor.setPower(0.4);
+            case NONE:
+                intakeMotor.setPower(0);
+        }
+    }
+
+    public void SetDrawerSlidePos(boolean drawerslideOut){
+        if(drawerslideOut){
+            rightSlideMotor.setPosition(0);
+            leftSlideMotor.setPosition(1);
+        }
+        else{
+            rightSlideMotor.setPosition(1);
+            leftSlideMotor.setPosition(0);
+        }
+    }
+
+    public void SetFlipMotorPos(boolean flipMotorOut){
+        if(flipMotorOut){
+            rightFlipMotor.setPosition(0);
+            leftFlipMotor.setPosition(1);
+        }
+        else{
+            rightFlipMotor.setPosition(0.55);
+            leftFlipMotor.setPosition(0.45);
+        }
     }
 }
