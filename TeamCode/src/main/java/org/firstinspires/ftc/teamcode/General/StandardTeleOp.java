@@ -32,10 +32,10 @@ public class StandardTeleOp extends LinearOpMode {
 
             //Getting desired slow mode:
             if(gamepad1.left_trigger > 0.2){
-                slowmodeMult = 0.2;
+                slowmodeMult = 0.7;
             }
             else if(gamepad1.right_trigger > 0.2) {
-                slowmodeMult = 0.7;
+                slowmodeMult = 0.2;
             }
             else{
                 slowmodeMult = 0.4;
@@ -62,7 +62,7 @@ public class StandardTeleOp extends LinearOpMode {
 
             robot.DriveChain(slowmodeMult, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             robot.SetClawPos(clawClosed);
-            robot.SetViperSlideMovement(viperSlideMovement);
+            robot.SetViperSlideMovement(slowmodeMult, viperSlideMovement);
 
             if(gamepad2.right_trigger > 0.2){
                 intakeMotorMovement = IntakeMotorStates.IN;
@@ -94,23 +94,22 @@ public class StandardTeleOp extends LinearOpMode {
 
             // Send telemetry messages to explain controls and show robot status
             telemetry.addLine("GAMEPAD 1")
-                    .addData("LEFT STICK Y", -gamepad1.left_stick_y)
-                    .addData("LEFT STICK X", gamepad1.left_stick_x)
-                    .addData("RIGHT STICK X", gamepad1.right_stick_x);
+                    .addData("\nLEFT STICK Y", -gamepad1.left_stick_y)
+                    .addData("\nLEFT STICK X", gamepad1.left_stick_x)
+                    .addData("\nRIGHT STICK X", gamepad1.right_stick_x);
 
             telemetry.addLine("GAMEPAD 2").
-                    addData("RIGHT TRIGGER STATUS", gamepad2.right_trigger)
-                    .addData("LEFT TRIGGER STATUS", gamepad2.left_trigger)
-                    .addData("TRIANGLE", gamepad2.triangle)
-                    .addData("CIRCLE", gamepad2.circle);
-            telemetry.addLine("POSITIONS/DIRECTIONS")
-                    .addData("SLOWMODE MULTIPLIER", slowmodeMult)
-                    .addData("CLAW CLOSED?", clawClosed)
-                    .addData("VIPER SLIDE MOVEMENT", viperSlideMovement);
+                    addData("\nRIGHT TRIGGER STATUS", gamepad2.right_trigger)
+                    .addData("\nLEFT TRIGGER STATUS", gamepad2.left_trigger)
+                    .addData("\nTRIANGLE", gamepad2.triangle)
+                    .addData("\nCIRCLE", gamepad2.circle);
+            telemetry.addLine("\nPOSITIONS/DIRECTIONS")
+                    .addData("\nSLOWMODE MULTIPLIER", slowmodeMult)
+                    .addData("\nCLAW CLOSED?", clawClosed)
+                    .addData("\nVIPER SLIDE MOVEMENT", viperSlideMovement);
             telemetry.update();
-
             // Pace this loop so hands move at a reasonable speed.
-            sleep(50);
+            sleep(20);
         }
     }
 }

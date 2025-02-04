@@ -64,7 +64,6 @@ public class RobotHardware {
     private DcMotor leftViperSlide = null;
     private DcMotor rightViperSlide = null;
     private Servo viperSlideClaw = null;
-//    public ColorSensor colorSensor = null;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public RobotHardware(LinearOpMode opmode) {
@@ -92,7 +91,6 @@ public class RobotHardware {
         rightViperSlide = myOpMode.hardwareMap.get(DcMotor.class, "rvs");
         viperSlideClaw = myOpMode.hardwareMap.get(Servo.class, "vsclaw");
 
-//        colorSensor = myOpMode.hardwareMap.get(ColorSensor.class, "cs");
 
 //        // AP: As long as all the left motors' directions are different from the right ones it should be fine
         frontLeft.setDirection(DcMotor.Direction.FORWARD);
@@ -100,6 +98,7 @@ public class RobotHardware {
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         rightSlideMotor.scaleRange(0.43,0.67);
         leftSlideMotor.scaleRange(0.33,0.57);
         leftViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -150,32 +149,34 @@ public class RobotHardware {
 
     public void SetClawPos(boolean clawClosed){
         if(clawClosed){
-            viperSlideClaw.setPosition(0.1);
+            viperSlideClaw.setPosition(0);
         }
         else{
             viperSlideClaw.setPosition(1);
         }
     }
 
-    public void SetViperSlideMovement(ViperSlideDirections viperSlideMovement){
+    public void SetViperSlideMovement(double slowModeMult, ViperSlideDirections viperSlideMovement){
         switch(viperSlideMovement){
             case UPWARDS:
                 leftViperSlide.setDirection(DcMotorSimple.Direction.REVERSE); //Goes up
                 rightViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
 
-                leftViperSlide.setPower(1);
-                rightViperSlide.setPower(1);
+                leftViperSlide.setPower(1 * (slowModeMult + 0.3));
+                rightViperSlide.setPower(1 * (slowModeMult + 0.3));
                 break;
             case DOWNWARDS:
                 leftViperSlide.setDirection(DcMotorSimple.Direction.FORWARD); //Goes down
                 rightViperSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
-                leftViperSlide.setPower(1);
-                rightViperSlide.setPower(1);
+                leftViperSlide.setPower(1 * (slowModeMult + 0.3));
+                rightViperSlide.setPower(1 * (slowModeMult + 0.3));
                 break;
             case NONE:
-                leftViperSlide.setPower(0);
-                rightViperSlide.setPower(0);
+                leftViperSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+                rightViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
+                leftViperSlide.setPower(0.08);
+                rightViperSlide.setPower(0.08);
                 break;
         }
     }
