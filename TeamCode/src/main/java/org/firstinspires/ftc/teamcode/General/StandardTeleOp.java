@@ -67,28 +67,13 @@ public class StandardTeleOp extends LinearOpMode {
             robot.SetClawPos(clawClosed);
             robot.SetViperSlideMovement(slowModeMultiplier, viperSlideMovement);
 
-            if(gamepad2.right_trigger > 0.2){
-                intakeMotorMovement = IntakeMotorStates.IN;
-            }
-            else if(gamepad2.cross || gamepad2.left_trigger > 0.2){
-                intakeMotorMovement = IntakeMotorStates.OUT;
-            }
-            else{
-                intakeMotorMovement = IntakeMotorStates.NONE;
-            }
-
-            if(gamepad2.right_bumper){
+            if(gamepad2.dpad_up){
                 drawerSlideOut = true;
-            }
-            else if(gamepad2.left_bumper){
-                drawerSlideOut = false;
-            }
-
-            if(gamepad2.circle){
-                flipMotorOut = false;
-            }
-            else if(gamepad2.triangle){
                 flipMotorOut = true;
+            }
+            else if(gamepad2.dpad_down){
+                drawerSlideOut = false;
+                flipMotorOut = false;
             }
 
 //            if(gamepad1.dpad_up){
@@ -100,11 +85,19 @@ public class StandardTeleOp extends LinearOpMode {
 //            else if(gamepad1.dpad_down) {
 //                desiredRevs = bottomRevs;
 //            }
+            if(gamepad2.right_bumper){
+                intakeMotorMovement = IntakeMotorStates.IN;
+            }
+            else if(gamepad2.left_bumper){
+                intakeMotorMovement = IntakeMotorStates.OUT;
+            }
+            else{
+                intakeMotorMovement = IntakeMotorStates.NONE;
+            }
 
 //            robot.SetViperSlidePos(desiredRevs);
+            robot.IntakeSystem(drawerSlideOut,flipMotorOut);
             robot.SetIntakeMotorMovement(intakeMotorMovement);
-            robot.SetDrawerSlidePos(drawerSlideOut);
-            robot.SetFlipMotorPos(flipMotorOut);
 
             // Send telemetry messages to explain controls and show robot status
             telemetry.addLine("GAMEPAD 1")

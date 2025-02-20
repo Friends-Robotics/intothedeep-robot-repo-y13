@@ -51,8 +51,8 @@ public class RobotHardware {
     private final LinearOpMode myOpMode;   // gain access to methods in the calling OpMode.
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    private DcMotor frontLeft   = null;
-    private DcMotor frontRight  = null;
+    private DcMotor frontLeft;
+    private DcMotor frontRight;
     private DcMotor backLeft = null;
     private DcMotor backRight = null;
 
@@ -115,11 +115,6 @@ public class RobotHardware {
 
         rightFlipMotor.setPosition(0.55); // Default position
         leftFlipMotor.setPosition(0.45);  // Default position
-
-        myOpMode.telemetry.addData(">", "Hardware Initialized");
-        myOpMode.telemetry.update();
-
-
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
@@ -240,7 +235,8 @@ public class RobotHardware {
         leftViperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    public void IntakeSystem(){
-
+    public void IntakeSystem(boolean slidePos, boolean flipMotorOut) {
+        SetDrawerSlidePos(slidePos);
+        SetFlipMotorPos(flipMotorOut);
     }
 }
