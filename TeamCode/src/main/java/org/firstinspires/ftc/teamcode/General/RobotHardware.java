@@ -64,6 +64,7 @@ public class RobotHardware {
     private DcMotor leftViperSlide = null;
     private DcMotor rightViperSlide = null;
     private Servo viperSlideClaw = null;
+    private static final int viperSlideMotorEncoderResolution = 99999999;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public RobotHardware(LinearOpMode opmode) {
@@ -101,9 +102,12 @@ public class RobotHardware {
 
         rightSlideMotor.scaleRange(0.43,0.67);
         leftSlideMotor.scaleRange(0.33,0.57);
+
+//        leftViperSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        rightViperSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         leftViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
 
         // Set initial positions for servos
         rightSlideMotor.setPosition(1);  // Retracted
@@ -157,20 +161,29 @@ public class RobotHardware {
     }
 
     public void SetViperSlideMovement(double slowModeMult, ViperSlideDirections viperSlideMovement){
+        leftViperSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightViperSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         switch(viperSlideMovement){
             case UPWARDS:
                 leftViperSlide.setDirection(DcMotorSimple.Direction.REVERSE); //Goes up
                 rightViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
 
-                leftViperSlide.setPower(1 * (slowModeMult + 0.3));
-                rightViperSlide.setPower(1 * (slowModeMult + 0.3));
+                if(rightViperSlide.getCurrentPosition() / viperSlideMotorEncoderResolution < 8){
+                    leftViperSlide.setPower(1 * (slowModeMult + 0.3));
+                    rightViperSlide.setPower(1 * (slowModeMult + 0.3));
+                }
+                else{
+                    SetViperSlideMovement(slowModeMult, ViperSlideDirections.NONE);
+                }
                 break;
             case DOWNWARDS:
                 leftViperSlide.setDirection(DcMotorSimple.Direction.FORWARD); //Goes down
                 rightViperSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
-                leftViperSlide.setPower(1 * (slowModeMult + 0.3));
-                rightViperSlide.setPower(1 * (slowModeMult + 0.3));
+                if(rightViperSlide.getCurrentPosition() > 0){
+                    leftViperSlide.setPower(1 * (slowModeMult + 0.3));
+                    rightViperSlide.setPower(1 * (slowModeMult + 0.3));
+                }
                 break;
             case NONE:
                 leftViperSlide.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -217,5 +230,12 @@ public class RobotHardware {
             rightFlipMotor.setPosition(0.55);
             leftFlipMotor.setPosition(0.45);
         }
+    }
+
+    public void SetViperSlidePos(int revsFromBottom){
+        leftViperSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightViperSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double encoderCountsFromBottom = revsFromBottom * viperSlideMotorEncoderResolution;
+        
     }
 }

@@ -9,12 +9,16 @@ public class StandardTeleOp extends LinearOpMode {
     // Create a RobotHardware object to be used to access robot hardware.
     // Prefix any hardware functions with "robot." to access this class.
     RobotHardware robot = new RobotHardware(this);
-    static double slowmodeMult = 0;
+    static double slowModeMultiplier = 0;
     static boolean clawClosed = true;
     static ViperSlideDirections viperSlideMovement = ViperSlideDirections.NONE;
     static IntakeMotorStates intakeMotorMovement = IntakeMotorStates.NONE;
     static boolean drawerSlideOut = false;
     static boolean flipMotorOut = false;
+    static int desiredRevs;
+    private static final int  topRungRevs = 6;
+    private static final int middleRungRevs = 3;
+    private static final int bottomRevs = 0;
 
     @Override
     public void runOpMode() {
@@ -32,13 +36,13 @@ public class StandardTeleOp extends LinearOpMode {
 
             //Getting desired slow mode:
             if(gamepad1.left_trigger > 0.2){
-                slowmodeMult = 0.7;
+                slowModeMultiplier = 0.7;
             }
             else if(gamepad1.right_trigger > 0.2) {
-                slowmodeMult = 0.2;
+                slowModeMultiplier = 0.2;
             }
             else{
-                slowmodeMult = 0.4;
+                slowModeMultiplier = 0.4;
             }
 
             //Getting desired claw position
@@ -60,9 +64,9 @@ public class StandardTeleOp extends LinearOpMode {
                 viperSlideMovement = ViperSlideDirections.NONE;
             }
 
-            robot.DriveChain(slowmodeMult, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            robot.DriveChain(slowModeMultiplier, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             robot.SetClawPos(clawClosed);
-            robot.SetViperSlideMovement(slowmodeMult, viperSlideMovement);
+            robot.SetViperSlideMovement(slowModeMultiplier, viperSlideMovement);
 
             if(gamepad2.right_trigger > 0.2){
                 intakeMotorMovement = IntakeMotorStates.IN;
@@ -88,6 +92,17 @@ public class StandardTeleOp extends LinearOpMode {
                 flipMotorOut = true;
             }
 
+//            if(gamepad2.dpad_up){
+//                desiredRevs = topRungRevs;
+//            }
+//            else if(gamepad2.dpad_right){
+//                desiredRevs = middleRungRevs;
+//            }
+//            else if(gamepad2.dpad_down) {
+//                desiredRevs = bottomRevs;
+//            }
+
+//            robot.SetViperSlidePos(desiredRevs);
             robot.SetIntakeMotorMovement(intakeMotorMovement);
             robot.SetDrawerSlidePos(drawerSlideOut);
             robot.SetFlipMotorPos(flipMotorOut);
@@ -104,7 +119,7 @@ public class StandardTeleOp extends LinearOpMode {
                     .addData("\nTRIANGLE", gamepad2.triangle)
                     .addData("\nCIRCLE", gamepad2.circle);
             telemetry.addLine("\nPOSITIONS/DIRECTIONS")
-                    .addData("\nSLOWMODE MULTIPLIER", slowmodeMult)
+                    .addData("\nSLOWMODE MULTIPLIER", slowModeMultiplier)
                     .addData("\nCLAW CLOSED?", clawClosed)
                     .addData("\nVIPER SLIDE MOVEMENT", viperSlideMovement);
             telemetry.update();
