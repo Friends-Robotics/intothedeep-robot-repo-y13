@@ -64,7 +64,7 @@ public class RobotHardware {
     private DcMotor leftViperSlide = null;
     private DcMotor rightViperSlide = null;
     private Servo viperSlideClaw = null;
-    private static final int viperSlideMotorEncoderResolution = 99999999;
+    private static final int viperSlideMotorEncoderResolution = 752;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public RobotHardware(LinearOpMode opmode) {
@@ -125,7 +125,7 @@ public class RobotHardware {
         myOpMode.telemetry.update();
     }
 
-    public void DriveChain(double slowmodeMult, double y, double x, double rx){
+    public void DriveChain(double slowModeMult, double y, double x, double rx){
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio,
@@ -139,10 +139,10 @@ public class RobotHardware {
         double backRightPower = (y + x - rx) / denominator;
 
 
-        frontLeftPower *= slowmodeMult;
-        backLeftPower *= slowmodeMult;
-        frontRightPower *= slowmodeMult; //bad
-        backRightPower *= slowmodeMult;
+        frontLeftPower *= slowModeMult;
+        backLeftPower *= slowModeMult;
+        frontRightPower *= slowModeMult; //bad
+        backRightPower *= slowModeMult;
 
 
         frontLeft.setPower(frontLeftPower);
@@ -210,8 +210,8 @@ public class RobotHardware {
         }
     }
 
-    public void SetDrawerSlidePos(boolean drawerslideOut){
-        if(drawerslideOut){
+    public void SetDrawerSlidePos(boolean drawerSlideOut){
+        if(drawerSlideOut){
             rightSlideMotor.setPosition(0);
             leftSlideMotor.setPosition(1);
         }
@@ -233,9 +233,14 @@ public class RobotHardware {
     }
 
     public void SetViperSlidePos(int revsFromBottom){
-        leftViperSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightViperSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        double encoderCountsFromBottom = revsFromBottom * viperSlideMotorEncoderResolution;
-        
+        int encoderCountsFromBottom = revsFromBottom * viperSlideMotorEncoderResolution;
+        rightViperSlide.setTargetPosition(encoderCountsFromBottom);
+        leftViperSlide.setTargetPosition(-encoderCountsFromBottom);
+        rightViperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftViperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    public void IntakeSystem(){
+
     }
 }

@@ -24,7 +24,6 @@ public class StandardTeleOp extends LinearOpMode {
     public void runOpMode() {
         // initialize all the hardware, using the hardware class. See how clean and simple this is?
         robot.init();
-
         // Send telemetry message to signify robot waiting;
         // Wait for the game to start (driver presses START)
         waitForStart();
@@ -92,13 +91,13 @@ public class StandardTeleOp extends LinearOpMode {
                 flipMotorOut = true;
             }
 
-//            if(gamepad2.dpad_up){
+//            if(gamepad1.dpad_up){
 //                desiredRevs = topRungRevs;
 //            }
-//            else if(gamepad2.dpad_right){
+//            else if(gamepad1.dpad_right){
 //                desiredRevs = middleRungRevs;
 //            }
-//            else if(gamepad2.dpad_down) {
+//            else if(gamepad1.dpad_down) {
 //                desiredRevs = bottomRevs;
 //            }
 
