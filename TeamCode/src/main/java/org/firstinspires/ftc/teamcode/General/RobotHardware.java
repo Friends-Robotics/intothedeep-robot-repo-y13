@@ -39,6 +39,9 @@ public class RobotHardware {
     public static final double CircumferenceOfWheelInMeters = 0.2356;
     public static final double WheelMotorEncoderResolution = 336;
     public static final double WheelbaseInMeters = 0.388;
+    public static final int TopRungRevs = 6;
+    public static final int PickUpFromWallRevs = 3;
+    public static final int BottomRevs = 0;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public RobotHardware(LinearOpMode opmode) {
@@ -72,6 +75,7 @@ public class RobotHardware {
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
+
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         rightSlideMotor.scaleRange(0.43,0.67);
@@ -84,11 +88,9 @@ public class RobotHardware {
         rightViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Set initial positions for servos
-        rightSlideMotor.setPosition(1);  // Retracted
-        leftSlideMotor.setPosition(0);   // Retracted
+        IntakeSystem(false, false);
 
-        rightFlipMotor.setPosition(0.55); // Default position
-        leftFlipMotor.setPosition(0.45);  // Default position
+        SetClawPos(true);
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
@@ -120,7 +122,7 @@ public class RobotHardware {
         backRight.setPower(backRightPower);
     }
 
-    public void DriveByEncoderTicks(int forwardTicks, int strafeTicks, int rotateTicks) {
+    public void DriveByEncoderTicks(int forwardTicks, int strafeTicks, int rotateTicks, double speed) {
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -145,10 +147,10 @@ public class RobotHardware {
         backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Set power (ensure all wheels move at the same rate)
-        frontLeft.setPower(0.5);
-        backLeft.setPower(0.5);
-        frontRight.setPower(0.5);
-        backRight.setPower(0.5);
+        frontLeft.setPower(speed);
+        backLeft.setPower(speed);
+        frontRight.setPower(speed);
+        backRight.setPower(speed);
 
         // Wait until all motors reach their target
         while (myOpMode.opModeIsActive() &&
@@ -248,8 +250,8 @@ public class RobotHardware {
         }
     }
 
-    public void SetViperSlidePos(int revsFromBottom){
-        int encoderCountsFromBottom = revsFromBottom * ViperSlideMotorEncoderResolution;
+    public void SetViperSlidePos(double revsFromBottom){
+        int encoderCountsFromBottom = (int)Math.round(revsFromBottom * ViperSlideMotorEncoderResolution);
         rightViperSlide.setTargetPosition(encoderCountsFromBottom);
         leftViperSlide.setTargetPosition(-encoderCountsFromBottom);
         rightViperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
