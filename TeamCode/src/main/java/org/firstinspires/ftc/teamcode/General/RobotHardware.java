@@ -1,32 +1,3 @@
-/* Copyright (c) 2022 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package org.firstinspires.ftc.teamcode.General;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -64,7 +35,10 @@ public class RobotHardware {
     private DcMotor leftViperSlide = null;
     private DcMotor rightViperSlide = null;
     private Servo viperSlideClaw = null;
-    private static final int viperSlideMotorEncoderResolution = 752;
+    public static final int ViperSlideMotorEncoderResolution = 752;
+    public static final double CircumferenceOfWheelInMeters = 0.2356;
+    public static final double WheelMotorEncoderResolution = 336;
+    public static final double WheelbaseInMeters = 0.388;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public RobotHardware(LinearOpMode opmode) {
@@ -136,7 +110,7 @@ public class RobotHardware {
 
         frontLeftPower *= slowModeMult;
         backLeftPower *= slowModeMult;
-        frontRightPower *= slowModeMult; //bad
+        frontRightPower *= slowModeMult;//bad
         backRightPower *= slowModeMult;
 
 
@@ -144,6 +118,53 @@ public class RobotHardware {
         backLeft.setPower(backLeftPower);
         frontRight.setPower(frontRightPower);
         backRight.setPower(backRightPower);
+    }
+
+    public void DriveByEncoderTicks(int forwardTicks, int strafeTicks, int rotateTicks) {
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // Calculate the target positions for mecanum movement
+        int frontLeftTarget = forwardTicks + strafeTicks + rotateTicks;
+        int backLeftTarget = forwardTicks - strafeTicks + rotateTicks;
+        int frontRightTarget = forwardTicks - strafeTicks - rotateTicks;
+        int backRightTarget = forwardTicks + strafeTicks - rotateTicks;
+
+        // Set target positions
+        frontLeft.setTargetPosition(frontLeftTarget);
+        backLeft.setTargetPosition(backLeftTarget);
+        frontRight.setTargetPosition(frontRightTarget);
+        backRight.setTargetPosition(backRightTarget);
+
+        // Set mode to RUN_TO_POSITION
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // Set power (ensure all wheels move at the same rate)
+        frontLeft.setPower(0.5);
+        backLeft.setPower(0.5);
+        frontRight.setPower(0.5);
+        backRight.setPower(0.5);
+
+        // Wait until all motors reach their target
+        while (myOpMode.opModeIsActive() &&
+                (frontLeft.isBusy() || backLeft.isBusy() || frontRight.isBusy() || backRight.isBusy())) {
+            myOpMode.telemetry.addData("FL Target", frontLeft.getTargetPosition());
+            myOpMode.telemetry.addData("BL Target", backLeft.getTargetPosition());
+            myOpMode.telemetry.addData("FR Target", frontRight.getTargetPosition());
+            myOpMode.telemetry.addData("BR Target", backRight.getTargetPosition());
+            myOpMode.telemetry.update();
+        }
+
+        // Stop all motors
+        frontLeft.setPower(0);
+        backLeft.setPower(0);
+        frontRight.setPower(0);
+        backRight.setPower(0);
     }
 
     public void SetClawPos(boolean clawClosed){
@@ -163,7 +184,7 @@ public class RobotHardware {
                 leftViperSlide.setDirection(DcMotorSimple.Direction.REVERSE); //Goes up
                 rightViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
 
-                if(rightViperSlide.getCurrentPosition() / viperSlideMotorEncoderResolution < 8){
+                if(rightViperSlide.getCurrentPosition() / ViperSlideMotorEncoderResolution < 8){
                     leftViperSlide.setPower(1 * (slowModeMult + 0.3));
                     rightViperSlide.setPower(1 * (slowModeMult + 0.3));
                 }
@@ -228,7 +249,7 @@ public class RobotHardware {
     }
 
     public void SetViperSlidePos(int revsFromBottom){
-        int encoderCountsFromBottom = revsFromBottom * viperSlideMotorEncoderResolution;
+        int encoderCountsFromBottom = revsFromBottom * ViperSlideMotorEncoderResolution;
         rightViperSlide.setTargetPosition(encoderCountsFromBottom);
         leftViperSlide.setTargetPosition(-encoderCountsFromBottom);
         rightViperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);

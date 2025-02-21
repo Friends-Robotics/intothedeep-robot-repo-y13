@@ -63,10 +63,6 @@ public class StandardTeleOp extends LinearOpMode {
                 viperSlideMovement = ViperSlideDirections.NONE;
             }
 
-            robot.DriveChain(slowModeMultiplier, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-            robot.SetClawPos(clawClosed);
-            robot.SetViperSlideMovement(slowModeMultiplier, viperSlideMovement);
-
             if(gamepad2.dpad_up){
                 drawerSlideOut = true;
                 flipMotorOut = true;
@@ -85,6 +81,7 @@ public class StandardTeleOp extends LinearOpMode {
 //            else if(gamepad1.dpad_down) {
 //                desiredRevs = bottomRevs;
 //            }
+
             if(gamepad2.right_bumper){
                 intakeMotorMovement = IntakeMotorStates.IN;
             }
@@ -98,6 +95,9 @@ public class StandardTeleOp extends LinearOpMode {
 //            robot.SetViperSlidePos(desiredRevs);
             robot.IntakeSystem(drawerSlideOut,flipMotorOut);
             robot.SetIntakeMotorMovement(intakeMotorMovement);
+            robot.DriveChain(slowModeMultiplier, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            robot.SetClawPos(clawClosed);
+            robot.SetViperSlideMovement(slowModeMultiplier, viperSlideMovement);
 
             // Send telemetry messages to explain controls and show robot status
             telemetry.addLine("GAMEPAD 1")
