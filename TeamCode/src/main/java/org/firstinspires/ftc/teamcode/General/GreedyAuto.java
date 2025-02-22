@@ -14,7 +14,7 @@ public class GreedyAuto extends LinearOpMode {
 
         //Hanging specimen at the start
         robot.SetViperSlidePos(RobotHardware.TopRungRevs);
-        robot.DriveByEncoderTicks(CalculateForwardTicks(2 * 0.6096), 0, 0, 0.6);
+        robot.DriveByEncoderTicks(CalculateForwardTicks(-(2 * 0.6096)), 0, 0, 0.6);
         robot.SetViperSlidePos(RobotHardware.TopRungRevs - 0.5);
         robot.SetClawPos(false);
 
