@@ -9,7 +9,7 @@ public class GreedyAuto extends LinearOpMode {
     RobotHardware robot = new RobotHardware(this);
     @Override
     public void runOpMode(){
-        robot.init();
+        robot.init(true);
         waitForStart();
 
         //Hanging specimen at the start

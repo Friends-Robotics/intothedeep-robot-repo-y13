@@ -19,16 +19,11 @@ enum IntakeMotorStates{
     NONE
 }
 public class RobotHardware {
-
-    /* Declare OpMode members. */
     private final LinearOpMode myOpMode;   // gain access to methods in the calling OpMode.
-
-    // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     private DcMotor frontLeft;
     private DcMotor frontRight;
     private DcMotor backLeft = null;
     private DcMotor backRight = null;
-
     private DcMotor intakeMotor = null;
     private Servo rightSlideMotor = null;
     private Servo leftSlideMotor = null;
@@ -44,13 +39,11 @@ public class RobotHardware {
     public static final int TopRungRevs = 6;
     public static final int PickUpFromWallRevs = 3;
     public static final int BottomRevs = 0;
-    Telemetry telemetry;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public RobotHardware(LinearOpMode opmode)
     {
         myOpMode = opmode;
-        telemetry = opmode.telemetry;
     }
 
     /**
@@ -59,8 +52,8 @@ public class RobotHardware {
      * <p>
      * All of the hardware devices are accessed via the hardware map, and initialized.
      */
-    public void init()    {
-        // Define and Initialize Motors (note: need to use reference to actual OpMode).
+    public void init(boolean resetEncoders) {
+        // Define and Initialize Motors
         frontLeft  = myOpMode.hardwareMap.get(DcMotor.class, "front_left");
         frontRight = myOpMode.hardwareMap.get(DcMotor.class, "front_right");
         backLeft = myOpMode.hardwareMap.get(DcMotor.class, "back_left");
@@ -74,35 +67,44 @@ public class RobotHardware {
         rightViperSlide = myOpMode.hardwareMap.get(DcMotor.class, "rvs");
         viperSlideClaw = myOpMode.hardwareMap.get(Servo.class, "vsclaw");
 
-        rightSlideMotor.scaleRange(0.5,0.75);
-        leftSlideMotor.scaleRange(0.25,0.5);
+        rightSlideMotor.scaleRange(0.5, 0.75);
+        leftSlideMotor.scaleRange(0.25, 0.5);
 
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
 
-        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        if (resetEncoders) {
+            SetDriveChainMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            SetDriveChainMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+        else{
+            SetDriveChainMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
 
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftViperSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightViperSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         leftViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        SetClawPos(false);
+        SetClawPos(true);
         IntakeSystem(false, false);
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
     }
 
+    public void SetDriveChainMotorMode(DcMotor.RunMode runMode){
+        frontLeft.setMode(runMode);
+        backLeft.setMode(runMode);
+        frontRight.setMode(runMode);
+        backRight.setMode(runMode);
+    }
+
     public void DriveChain(double slowModeMult, double y, double x, double rx){
-
-        // Denominator is the largest motor power (absolute value) or 1
-        // This ensures all the powers maintain the same ratio,
-        // but only if at least one is out of the range [-1, 1]
-
         //AP: Don't even ask me how this works, I'm not a vectors wizard.... gm0.com
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
         double frontLeftPower = (y + x + rx) / denominator;
@@ -121,13 +123,19 @@ public class RobotHardware {
         backLeft.setPower(backLeftPower);
         frontRight.setPower(frontRightPower);
         backRight.setPower(backRightPower);
-    }
 
+        while (myOpMode.opModeIsActive() &&
+                (frontLeft.isBusy() || backLeft.isBusy() || frontRight.isBusy() || backRight.isBusy())){
+            myOpMode.telemetry.addLine("Current motor positions in ticks")
+                    .addData("Front Left: ", frontLeft.getCurrentPosition())
+                    .addData("Front Right: ", frontRight.getCurrentPosition())
+                    .addData("Back Right: ", backRight.getCurrentPosition())
+                    .addData("Back Left: ", backLeft.getCurrentPosition());
+            myOpMode.telemetry.update();
+        }
+    }
     public void DriveByEncoderTicks(int forwardTicks, int strafeTicks, int rotateTicks, double speed) {
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        SetDriveChainMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Calculate the target positions for mecanum movement
         int frontLeftTarget = forwardTicks + strafeTicks + rotateTicks;
@@ -142,10 +150,7 @@ public class RobotHardware {
         backRight.setTargetPosition(backRightTarget);
 
         // Set mode to RUN_TO_POSITION
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        SetDriveChainMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Set power (ensure all wheels move at the same rate)
         frontLeft.setPower(0.2);
@@ -169,7 +174,6 @@ public class RobotHardware {
         frontRight.setPower(0);
         backRight.setPower(0);
     }
-
     public void SetClawPos(boolean clawClosed){
         if(clawClosed){
             viperSlideClaw.setPosition(0.5);
@@ -178,7 +182,6 @@ public class RobotHardware {
             viperSlideClaw.setPosition(0.25);
         }
     }
-
     public void SetViperSlideMovement(double slowModeMult, ViperSlideDirections viperSlideMovement){
         switch(viperSlideMovement){
             case UPWARDS:
@@ -203,7 +206,6 @@ public class RobotHardware {
                 break;
         }
     }
-
     public void SetIntakeMotorMovement(IntakeMotorStates intakeMotorMovement){
         switch(intakeMotorMovement){
             case IN:
@@ -219,7 +221,6 @@ public class RobotHardware {
                 break;
         }
     }
-
     public void SetDrawerSlidePos(boolean slideOut){ //RIGHT SLIDE MAXXED -> MAX EXTENSION
         if(slideOut){
             rightSlideMotor.setPosition(1);
@@ -229,7 +230,6 @@ public class RobotHardware {
             leftSlideMotor.setPosition(1);
         }
     }
-
     public void SetFlipMotorPos(boolean flipMotorOut){
         if(flipMotorOut){
             rightFlipMotor.setPosition(0);
@@ -240,7 +240,6 @@ public class RobotHardware {
             leftFlipMotor.setPosition(0.28);
         }
     }
-
     public void SetViperSlidePos(double revsFromBottom){
         int encoderCountsFromBottom = (int)Math.round(revsFromBottom * ViperSlideMotorEncoderResolution);
         rightViperSlide.setTargetPosition(encoderCountsFromBottom);
@@ -248,7 +247,6 @@ public class RobotHardware {
         rightViperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftViperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
-
     public void IntakeSystem(boolean slideOut, boolean flipMotorOut) {
         SetFlipMotorPos(flipMotorOut);
         SetDrawerSlidePos(slideOut);
