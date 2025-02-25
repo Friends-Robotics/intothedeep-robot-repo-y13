@@ -1,13 +1,10 @@
 package org.firstinspires.ftc.teamcode.General;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-@TeleOp(name="StandardTeleOp", group="Robot")
-public class StandardTeleOp extends LinearOpMode {
+@TeleOp(name="RawTeleOp", group="Robot")
+public class RawTeleOp extends LinearOpMode {
 
     // Create a RobotHardware object to be used to access robot hardware.
     // Prefix any hardware functions with "robot." to access this class.
@@ -75,20 +72,6 @@ public class StandardTeleOp extends LinearOpMode {
                 flipMotorOut = false;
             }
 
-            if(gamepad2.square){
-                drawerSlideOut = true;
-            }
-            else if(gamepad2.cross){
-                drawerSlideOut = false;
-            }
-
-            if(gamepad2.triangle){
-                flipMotorOut = true;
-            }
-            else if(gamepad2.circle){
-                flipMotorOut = false;
-            }
-
 //            if(gamepad1.dpad_up){
 //                desiredRevs = topRungRevs;
 //            }
@@ -110,11 +93,11 @@ public class StandardTeleOp extends LinearOpMode {
             }
 
 //            robot.SetViperSlidePos(desiredRevs);
-            robot.SetViperSlideMovement(slowModeMultiplier, viperSlideMovement);
             robot.SetIntakeMotorMovement(intakeMotorMovement);
             robot.DriveChain(slowModeMultiplier, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             robot.SetClawPos(clawClosed);
-            robot.IntakeSystem(drawerSlideOut, flipMotorOut);
+            robot.SetFlipMotorPos(flipMotorOut);
+            robot.SetDrawerSlidePos(drawerSlideOut);
 
             // Send telemetry messages to explain controls and show robot status
             telemetry.addLine("GAMEPAD 1")

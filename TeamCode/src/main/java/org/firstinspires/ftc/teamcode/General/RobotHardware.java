@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 enum ViperSlideDirections {
     UPWARDS,
     DOWNWARDS,
@@ -42,10 +44,13 @@ public class RobotHardware {
     public static final int TopRungRevs = 6;
     public static final int PickUpFromWallRevs = 3;
     public static final int BottomRevs = 0;
+    Telemetry telemetry;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
-    public RobotHardware(LinearOpMode opmode) {
+    public RobotHardware(LinearOpMode opmode)
+    {
         myOpMode = opmode;
+        telemetry = opmode.telemetry;
     }
 
     /**
@@ -225,8 +230,8 @@ public class RobotHardware {
         }
     }
 
-    public void SetFlipMotorPos(boolean flipMotorIn){
-        if(flipMotorIn){
+    public void SetFlipMotorPos(boolean flipMotorOut){
+        if(flipMotorOut){
             rightFlipMotor.setPosition(0);
             leftFlipMotor.setPosition(1);
         }
@@ -244,8 +249,8 @@ public class RobotHardware {
         leftViperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    public void IntakeSystem(boolean slideOut, boolean flipMotorIn) {
+    public void IntakeSystem(boolean slideOut, boolean flipMotorOut) {
+        SetFlipMotorPos(flipMotorOut);
         SetDrawerSlidePos(slideOut);
-        SetFlipMotorPos(flipMotorIn);
     }
 }
