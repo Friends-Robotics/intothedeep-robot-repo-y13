@@ -93,11 +93,11 @@ public class StandardTeleOp extends LinearOpMode {
             }
 
 //            robot.SetViperSlidePos(desiredRevs);
-            robot.IntakeSystem(drawerSlideOut,flipMotorOut);
             robot.SetIntakeMotorMovement(intakeMotorMovement);
             robot.DriveChain(slowModeMultiplier, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             robot.SetClawPos(clawClosed);
-            robot.SetViperSlideMovement(slowModeMultiplier, viperSlideMovement);
+            robot.SetFlipMotorPos(flipMotorOut);
+            robot.SetDrawerSlidePos(drawerSlideOut);
 
             // Send telemetry messages to explain controls and show robot status
             telemetry.addLine("GAMEPAD 1")
@@ -107,6 +107,7 @@ public class StandardTeleOp extends LinearOpMode {
 
             telemetry.addLine("GAMEPAD 2").
                     addData("\nRIGHT TRIGGER STATUS", gamepad2.right_trigger)
+                    .addData("\n Left x axis", gamepad2.left_stick_x)
                     .addData("\nLEFT TRIGGER STATUS", gamepad2.left_trigger)
                     .addData("\nTRIANGLE", gamepad2.triangle)
                     .addData("\nCIRCLE", gamepad2.circle);

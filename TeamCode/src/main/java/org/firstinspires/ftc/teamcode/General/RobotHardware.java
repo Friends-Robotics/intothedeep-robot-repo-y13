@@ -69,28 +69,24 @@ public class RobotHardware {
         rightViperSlide = myOpMode.hardwareMap.get(DcMotor.class, "rvs");
         viperSlideClaw = myOpMode.hardwareMap.get(Servo.class, "vsclaw");
 
+        rightSlideMotor.scaleRange(0.5,0.75);
+        leftSlideMotor.scaleRange(0.25,0.5);
 
-//        // AP: As long as all the left motors' directions are different from the right ones it should be fine
-        frontLeft.setDirection(DcMotor.Direction.FORWARD);
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
 
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        rightSlideMotor.scaleRange(0.43,0.67);
-        leftSlideMotor.scaleRange(0.33,0.57);
-
-//        leftViperSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        rightViperSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftViperSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightViperSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         leftViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // Set initial positions for servos
+        SetClawPos(false);
         IntakeSystem(false, false);
-
-        SetClawPos(true);
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
@@ -147,10 +143,10 @@ public class RobotHardware {
         backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Set power (ensure all wheels move at the same rate)
-        frontLeft.setPower(speed);
-        backLeft.setPower(speed);
-        frontRight.setPower(speed);
-        backRight.setPower(speed);
+        frontLeft.setPower(0.2);
+        backLeft.setPower(0.2);
+        frontRight.setPower(0.2);
+        backRight.setPower(0.2);
 
         // Wait until all motors reach their target
         while (myOpMode.opModeIsActive() &&
@@ -171,41 +167,32 @@ public class RobotHardware {
 
     public void SetClawPos(boolean clawClosed){
         if(clawClosed){
-            viperSlideClaw.setPosition(0);
+            viperSlideClaw.setPosition(0.5);
         }
         else{
-            viperSlideClaw.setPosition(1);
+            viperSlideClaw.setPosition(0.25);
         }
     }
 
     public void SetViperSlideMovement(double slowModeMult, ViperSlideDirections viperSlideMovement){
-        leftViperSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightViperSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         switch(viperSlideMovement){
             case UPWARDS:
-                leftViperSlide.setDirection(DcMotorSimple.Direction.REVERSE); //Goes up
-                rightViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
-
-                if(rightViperSlide.getCurrentPosition() / ViperSlideMotorEncoderResolution < 8){
-                    leftViperSlide.setPower(1 * (slowModeMult + 0.3));
-                    rightViperSlide.setPower(1 * (slowModeMult + 0.3));
-                }
-                else{
-                    SetViperSlideMovement(slowModeMult, ViperSlideDirections.NONE);
-                }
-                break;
-            case DOWNWARDS:
-                leftViperSlide.setDirection(DcMotorSimple.Direction.FORWARD); //Goes down
+                leftViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
                 rightViperSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
-                if(rightViperSlide.getCurrentPosition() > 0){
-                    leftViperSlide.setPower(1 * (slowModeMult + 0.3));
-                    rightViperSlide.setPower(1 * (slowModeMult + 0.3));
-                }
+                leftViperSlide.setPower(1);
+                rightViperSlide.setPower(1);
                 break;
-            case NONE:
+            case DOWNWARDS:
                 leftViperSlide.setDirection(DcMotorSimple.Direction.REVERSE);
                 rightViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
+
+                leftViperSlide.setPower(1);
+                rightViperSlide.setPower(1);
+                break;
+            case NONE:
+                leftViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
+                rightViperSlide.setDirection(DcMotorSimple.Direction.REVERSE);
                 leftViperSlide.setPower(0.08);
                 rightViperSlide.setPower(0.08);
                 break;
@@ -228,25 +215,24 @@ public class RobotHardware {
         }
     }
 
-    public void SetDrawerSlidePos(boolean drawerSlideOut){
-        if(drawerSlideOut){
+    public void SetDrawerSlidePos(boolean slideOut){ //RIGHT SLIDE MAXXED -> MAX EXTENSION
+        if(slideOut){
+            rightSlideMotor.setPosition(1);
+            leftSlideMotor.setPosition(0);
+        }else{
             rightSlideMotor.setPosition(0);
             leftSlideMotor.setPosition(1);
         }
-        else{
-            rightSlideMotor.setPosition(1);
-            leftSlideMotor.setPosition(0);
-        }
     }
 
-    public void SetFlipMotorPos(boolean flipMotorOut){
-        if(flipMotorOut){
+    public void SetFlipMotorPos(boolean flipMotorIn){
+        if(flipMotorIn){
             rightFlipMotor.setPosition(0);
             leftFlipMotor.setPosition(1);
         }
         else{
-            rightFlipMotor.setPosition(0.55);
-            leftFlipMotor.setPosition(0.45);
+            rightFlipMotor.setPosition(0.72);
+            leftFlipMotor.setPosition(0.28);
         }
     }
 
@@ -258,8 +244,8 @@ public class RobotHardware {
         leftViperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    public void IntakeSystem(boolean slidePos, boolean flipMotorOut) {
-        SetDrawerSlidePos(slidePos);
-        SetFlipMotorPos(flipMotorOut);
+    public void IntakeSystem(boolean slideOut, boolean flipMotorIn) {
+        SetDrawerSlidePos(slideOut);
+        SetFlipMotorPos(flipMotorIn);
     }
 }

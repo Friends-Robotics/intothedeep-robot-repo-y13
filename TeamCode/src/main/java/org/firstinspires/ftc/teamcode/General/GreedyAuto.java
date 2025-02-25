@@ -14,7 +14,7 @@ public class GreedyAuto extends LinearOpMode {
 
         //Hanging specimen at the start
         robot.SetViperSlidePos(RobotHardware.TopRungRevs);
-        robot.DriveByEncoderTicks(CalculateForwardTicks(-(2 * 0.6096)), 0, 0, 0.6);
+        robot.DriveByEncoderTicks(CalculateForwardTicks(0.6), 0, 0, 0.6);
         robot.SetViperSlidePos(RobotHardware.TopRungRevs - 0.5);
         robot.SetClawPos(false);
 
@@ -28,11 +28,11 @@ public class GreedyAuto extends LinearOpMode {
     }
 
     private int CalculateForwardTicks(double forwardsInMeters) {
-        return (int) ((forwardsInMeters/ RobotHardware.CircumferenceOfWheelInMeters) * RobotHardware.WheelMotorEncoderResolution);
+        return (int) ((-forwardsInMeters/ RobotHardware.CircumferenceOfWheelInMeters) * RobotHardware.WheelMotorEncoderResolution);
     }
 
     private int CalculateStrafeTicks(double strafeInMeters) {
-        return (int) ((strafeInMeters * Math.sqrt(2) / RobotHardware.CircumferenceOfWheelInMeters) * RobotHardware.WheelMotorEncoderResolution);
+        return (int) ((-strafeInMeters * Math.sqrt(2) / RobotHardware.CircumferenceOfWheelInMeters) * RobotHardware.WheelMotorEncoderResolution);
     }
 
     private int CalculateRotateTicks(double degreesClockwise) {
@@ -45,9 +45,9 @@ public class GreedyAuto extends LinearOpMode {
     }
 
     private void FromHangingToObservationZonePickup(){
-        robot.DriveByEncoderTicks(0,0,CalculateRotateTicks(180),0.6);
+        robot.DriveByEncoderTicks(0,0,1400,0.6);
         robot.DriveByEncoderTicks(0,CalculateStrafeTicks(-0.9144), 0,0.6);
-        robot.DriveByEncoderTicks(CalculateForwardTicks(0.6604), 0, 0, 0.6);
+        robot.DriveByEncoderTicks(CalculateForwardTicks(0.6), 0, 0, 0.6);
         robot.SetClawPos(true);
         robot.SetViperSlidePos(RobotHardware.PickUpFromWallRevs + 0.25);
     }
@@ -56,7 +56,7 @@ public class GreedyAuto extends LinearOpMode {
         new Thread(() -> {
             robot.SetViperSlidePos(RobotHardware.BottomRevs);
         }).start();
-        robot.DriveByEncoderTicks(0,0,CalculateRotateTicks(180), 0.6);
+        robot.DriveByEncoderTicks(0,0,1400, 0.6);
         robot.DriveByEncoderTicks(CalculateForwardTicks((2 * 0.6096) - 0.10),CalculateStrafeTicks(-0.9144), 0, 0.6);
         robot.SetViperSlidePos(RobotHardware.TopRungRevs);
         robot.DriveByEncoderTicks(CalculateForwardTicks(0.1), 0,0,0.2);
