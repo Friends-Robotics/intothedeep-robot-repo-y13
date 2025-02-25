@@ -15,8 +15,10 @@ public class StandardTeleOp extends LinearOpMode {
     static IntakeMotorStates intakeMotorMovement = IntakeMotorStates.NONE;
     static boolean drawerSlideOut = false;
     static boolean flipMotorOut = false;
-    private int desiredRevs;
-
+    static int desiredRevs;
+    private static final int  topRungRevs = 6;
+    private static final int middleRungRevs = 3;
+    private static final int bottomRevs = 0;
 
     @Override
     public void runOpMode() {

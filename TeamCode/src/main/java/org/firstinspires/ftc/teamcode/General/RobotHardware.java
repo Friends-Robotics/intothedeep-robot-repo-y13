@@ -22,7 +22,7 @@ public class RobotHardware {
     private final LinearOpMode myOpMode;   // gain access to methods in the calling OpMode.
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    public DcMotor frontLeft;
+    private DcMotor frontLeft;
     private DcMotor frontRight;
     private DcMotor backLeft = null;
     private DcMotor backRight = null;
@@ -39,9 +39,6 @@ public class RobotHardware {
     public static final double CircumferenceOfWheelInMeters = 0.2356;
     public static final double WheelMotorEncoderResolution = 336;
     public static final double WheelbaseInMeters = 0.388;
-    public static final int TopRungRevs = 6;
-    public static final int PickUpFromWallRevs = 3;
-    public static final int BottomRevs = 0;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public RobotHardware(LinearOpMode opmode) {
@@ -75,28 +72,11 @@ public class RobotHardware {
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
-
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         rightSlideMotor.scaleRange(0.43,0.67);
         leftSlideMotor.scaleRange(0.33,0.57);
 
-        viperSlideClaw.scaleRange(0,0.2);
 //        leftViperSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        rightViperSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -104,9 +84,11 @@ public class RobotHardware {
         rightViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Set initial positions for servos
-        IntakeSystem(false, false);
+        rightSlideMotor.setPosition(1);  // Retracted
+        leftSlideMotor.setPosition(0);   // Retracted
 
-        SetClawPos(true);
+        rightFlipMotor.setPosition(0.55); // Default position
+        leftFlipMotor.setPosition(0.45);  // Default position
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
@@ -138,7 +120,12 @@ public class RobotHardware {
         backRight.setPower(backRightPower);
     }
 
-    public void DriveByEncoderTicks(int forwardTicks, int strafeTicks, int rotateTicks, double speed) {
+    public void DriveByEncoderTicks(int forwardTicks, int strafeTicks, int rotateTicks) {
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         // Calculate the target positions for mecanum movement
         int frontLeftTarget = forwardTicks + strafeTicks + rotateTicks;
         int backLeftTarget = forwardTicks - strafeTicks + rotateTicks;
@@ -146,10 +133,10 @@ public class RobotHardware {
         int backRightTarget = forwardTicks + strafeTicks - rotateTicks;
 
         // Set target positions
-        frontLeft.setTargetPosition(frontLeft.getTargetPosition() + frontLeftTarget);
-        backLeft.setTargetPosition(backLeft.getTargetPosition() + backLeftTarget);
-        frontRight.setTargetPosition(frontRight.getTargetPosition() + frontRightTarget);
-        backRight.setTargetPosition(backRight.getTargetPosition() + backRightTarget);
+        frontLeft.setTargetPosition(frontLeftTarget);
+        backLeft.setTargetPosition(backLeftTarget);
+        frontRight.setTargetPosition(frontRightTarget);
+        backRight.setTargetPosition(backRightTarget);
 
         // Set mode to RUN_TO_POSITION
         frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -158,10 +145,26 @@ public class RobotHardware {
         backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Set power (ensure all wheels move at the same rate)
-        frontLeft.setPower(speed);
-        backLeft.setPower(speed);
-        frontRight.setPower(speed);
-        backRight.setPower(speed);
+        frontLeft.setPower(0.5);
+        backLeft.setPower(0.5);
+        frontRight.setPower(0.5);
+        backRight.setPower(0.5);
+
+        // Wait until all motors reach their target
+        while (myOpMode.opModeIsActive() &&
+                (frontLeft.isBusy() || backLeft.isBusy() || frontRight.isBusy() || backRight.isBusy())) {
+            myOpMode.telemetry.addData("FL Target", frontLeft.getTargetPosition());
+            myOpMode.telemetry.addData("BL Target", backLeft.getTargetPosition());
+            myOpMode.telemetry.addData("FR Target", frontRight.getTargetPosition());
+            myOpMode.telemetry.addData("BR Target", backRight.getTargetPosition());
+            myOpMode.telemetry.update();
+        }
+
+        // Stop all motors
+        frontLeft.setPower(0);
+        backLeft.setPower(0);
+        frontRight.setPower(0);
+        backRight.setPower(0);
     }
 
     public void SetClawPos(boolean clawClosed){
@@ -225,12 +228,12 @@ public class RobotHardware {
 
     public void SetDrawerSlidePos(boolean drawerSlideOut){
         if(drawerSlideOut){
-            rightSlideMotor.setPosition(1);
-            leftSlideMotor.setPosition(0);
-        }
-        else{
             rightSlideMotor.setPosition(0);
             leftSlideMotor.setPosition(1);
+        }
+        else{
+            rightSlideMotor.setPosition(1);
+            leftSlideMotor.setPosition(0);
         }
     }
 
@@ -245,8 +248,8 @@ public class RobotHardware {
         }
     }
 
-    public void SetViperSlidePos(double revsFromBottom){
-        int encoderCountsFromBottom = (int)Math.round(revsFromBottom * ViperSlideMotorEncoderResolution);
+    public void SetViperSlidePos(int revsFromBottom){
+        int encoderCountsFromBottom = revsFromBottom * ViperSlideMotorEncoderResolution;
         rightViperSlide.setTargetPosition(encoderCountsFromBottom);
         leftViperSlide.setTargetPosition(-encoderCountsFromBottom);
         rightViperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);

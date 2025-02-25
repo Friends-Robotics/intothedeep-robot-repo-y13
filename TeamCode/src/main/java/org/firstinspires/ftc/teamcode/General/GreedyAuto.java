@@ -12,57 +12,30 @@ public class GreedyAuto extends LinearOpMode {
         robot.init();
         waitForStart();
 
-        //Hanging specimen at the start
-        robot.SetViperSlidePos(RobotHardware.TopRungRevs);
-        robot.DriveByEncoderTicks(CalculateForwardTicks(2 * 0.6096), 0, 0, 0.6);
-        robot.SetViperSlidePos(RobotHardware.TopRungRevs - 0.5);
-        robot.SetClawPos(false);
+        robot.DriveByEncoderTicks(calculateForwardTicks(18), calculateStrafeTicks(0), calculateRotateTicks(0));
+        robot.DriveByEncoderTicks(calculateForwardTicks(0), calculateStrafeTicks(18), calculateRotateTicks(0));
+        robot.DriveByEncoderTicks(calculateForwardTicks(0), calculateStrafeTicks(0), calculateRotateTicks(9000));
 
-        FromHangingToObservationZonePickup();
-        FromObservationZonePickupToHang();
-        FromHangingToObservationZonePickup();
-        FromObservationZonePickupToHang();
 
-        robot.DriveByEncoderTicks(0,CalculateStrafeTicks(0.9144), 0,0.6);
-        robot.DriveByEncoderTicks(CalculateForwardTicks(-0.6604), 0, 0, 0.6);
+
     }
 
-    private int CalculateForwardTicks(double forwardsInMeters) {
-        return (int) ((-forwardsInMeters/ RobotHardware.CircumferenceOfWheelInMeters) * RobotHardware.WheelMotorEncoderResolution);
+    public int calculateForwardTicks(double forwardsInMeters) {
+        return (int) ((forwardsInMeters/ RobotHardware.CircumferenceOfWheelInMeters) * RobotHardware.WheelMotorEncoderResolution);
     }
 
-    private int CalculateStrafeTicks(double strafeInMeters) {
-        return (int) ((-strafeInMeters * Math.sqrt(2) / RobotHardware.CircumferenceOfWheelInMeters) * RobotHardware.WheelMotorEncoderResolution);
+    public int calculateStrafeTicks(double strafeInMeters) {
+        return (int) ((strafeInMeters * Math.sqrt(2) / RobotHardware.CircumferenceOfWheelInMeters) * RobotHardware.WheelMotorEncoderResolution);
     }
 
-    public int calculateRotateTicks(double degrees) {
-        // Calculate the arc length each wheel must travel
-        double turningDistance = Math.PI * RobotHardware.WheelbaseInMeters * (degrees / 360.0);
+    public int calculateRotateTicks(double degreesClockwise) {
+        // Calculate the arc length the wheels need to travel
+        double turningDistance = (Math.PI * RobotHardware.WheelbaseInMeters) * (degreesClockwise / 360.0);
 
-        // Convert distance to encoder ticks
+        // Convert distance into encoder ticks
         return (int) ((turningDistance / RobotHardware.CircumferenceOfWheelInMeters)
-                * RobotHardware.WheelMotorEncoderResolution);
+                * RobotHardware.WheelMotorEncoderResolution * 2); // Multiply by 2 for mecanum turning
     }
 
-    private void FromHangingToObservationZonePickup(){
-        robot.DriveByEncoderTicks(0,0,1390,0.6);
-        robot.SetViperSlidePos(RobotHardware.PickUpFromWallRevs);
-        robot.DriveByEncoderTicks(0,CalculateStrafeTicks(-0.9144), 0,0.6);
-        robot.DriveByEncoderTicks(CalculateForwardTicks(0.6604), 0, 0, 0.6);
-        robot.SetClawPos(true);
-        robot.SetViperSlidePos(RobotHardware.PickUpFromWallRevs + 0.25);
-    }
 
-    private void FromObservationZonePickupToHang(){
-        new Thread(() -> {
-            robot.SetViperSlidePos(RobotHardware.BottomRevs);
-        }).start();
-        robot.DriveByEncoderTicks(0,0, 1390, 0.6);
-        new Thread(() -> {
-            robot.DriveByEncoderTicks(CalculateForwardTicks(2 * 0.6096),CalculateStrafeTicks(-0.9144), 0, 0.6);
-        }).start();
-        robot.SetViperSlidePos(RobotHardware.TopRungRevs);
-        robot.SetViperSlidePos(RobotHardware.TopRungRevs - 0.5);
-        robot.SetClawPos(false);
-    }
 }
