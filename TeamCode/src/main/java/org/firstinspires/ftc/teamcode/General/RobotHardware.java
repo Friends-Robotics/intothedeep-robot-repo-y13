@@ -22,7 +22,7 @@ public class RobotHardware {
     private final LinearOpMode myOpMode;   // gain access to methods in the calling OpMode.
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    private DcMotor frontLeft;
+    public DcMotor frontLeft;
     private DcMotor frontRight;
     private DcMotor backLeft = null;
     private DcMotor backRight = null;
@@ -76,11 +76,27 @@ public class RobotHardware {
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
 
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         rightSlideMotor.scaleRange(0.43,0.67);
         leftSlideMotor.scaleRange(0.33,0.57);
 
+        viperSlideClaw.scaleRange(0,0.2);
 //        leftViperSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        rightViperSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -123,11 +139,6 @@ public class RobotHardware {
     }
 
     public void DriveByEncoderTicks(int forwardTicks, int strafeTicks, int rotateTicks, double speed) {
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         // Calculate the target positions for mecanum movement
         int frontLeftTarget = forwardTicks + strafeTicks + rotateTicks;
         int backLeftTarget = forwardTicks - strafeTicks + rotateTicks;
@@ -135,10 +146,10 @@ public class RobotHardware {
         int backRightTarget = forwardTicks + strafeTicks - rotateTicks;
 
         // Set target positions
-        frontLeft.setTargetPosition(frontLeftTarget);
-        backLeft.setTargetPosition(backLeftTarget);
-        frontRight.setTargetPosition(frontRightTarget);
-        backRight.setTargetPosition(backRightTarget);
+        frontLeft.setTargetPosition(frontLeft.getTargetPosition() + frontLeftTarget);
+        backLeft.setTargetPosition(backLeft.getTargetPosition() + backLeftTarget);
+        frontRight.setTargetPosition(frontRight.getTargetPosition() + frontRightTarget);
+        backRight.setTargetPosition(backRight.getTargetPosition() + backRightTarget);
 
         // Set mode to RUN_TO_POSITION
         frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -151,22 +162,6 @@ public class RobotHardware {
         backLeft.setPower(speed);
         frontRight.setPower(speed);
         backRight.setPower(speed);
-
-        // Wait until all motors reach their target
-        while (myOpMode.opModeIsActive() &&
-                (frontLeft.isBusy() || backLeft.isBusy() || frontRight.isBusy() || backRight.isBusy())) {
-            myOpMode.telemetry.addData("FL Target", frontLeft.getTargetPosition());
-            myOpMode.telemetry.addData("BL Target", backLeft.getTargetPosition());
-            myOpMode.telemetry.addData("FR Target", frontRight.getTargetPosition());
-            myOpMode.telemetry.addData("BR Target", backRight.getTargetPosition());
-            myOpMode.telemetry.update();
-        }
-
-        // Stop all motors
-        frontLeft.setPower(0);
-        backLeft.setPower(0);
-        frontRight.setPower(0);
-        backRight.setPower(0);
     }
 
     public void SetClawPos(boolean clawClosed){
@@ -230,12 +225,12 @@ public class RobotHardware {
 
     public void SetDrawerSlidePos(boolean drawerSlideOut){
         if(drawerSlideOut){
-            rightSlideMotor.setPosition(0);
-            leftSlideMotor.setPosition(1);
-        }
-        else{
             rightSlideMotor.setPosition(1);
             leftSlideMotor.setPosition(0);
+        }
+        else{
+            rightSlideMotor.setPosition(0);
+            leftSlideMotor.setPosition(1);
         }
     }
 

@@ -99,6 +99,7 @@ public class StandardTeleOp extends LinearOpMode {
 
             // Send telemetry messages to explain controls and show robot status
             telemetry.addLine("GAMEPAD 1")
+                    .addData("ticks", robot.frontLeft.getCurrentPosition())
                     .addData("\nLEFT STICK Y", -gamepad1.left_stick_y)
                     .addData("\nLEFT STICK X", gamepad1.left_stick_x)
                     .addData("\nRIGHT STICK X", gamepad1.right_stick_x);
