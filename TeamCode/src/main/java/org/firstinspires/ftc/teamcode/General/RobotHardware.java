@@ -94,7 +94,6 @@ public class RobotHardware {
         IntakeSystem(false, false);
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
-        myOpMode.telemetry.update();
     }
 
     public void SetDriveChainMotorMode(DcMotor.RunMode runMode){
@@ -124,15 +123,12 @@ public class RobotHardware {
         frontRight.setPower(frontRightPower);
         backRight.setPower(backRightPower);
 
-        while (myOpMode.opModeIsActive() &&
-                (frontLeft.isBusy() || backLeft.isBusy() || frontRight.isBusy() || backRight.isBusy())){
-            myOpMode.telemetry.addLine("Current motor positions in ticks")
-                    .addData("Front Left: ", frontLeft.getCurrentPosition())
-                    .addData("Front Right: ", frontRight.getCurrentPosition())
-                    .addData("Back Right: ", backRight.getCurrentPosition())
-                    .addData("Back Left: ", backLeft.getCurrentPosition());
-            myOpMode.telemetry.update();
-        }
+        myOpMode.telemetry.addLine("Current motor positions in ticks")
+                .addData("Front Left: ", frontLeft.getCurrentPosition())
+                .addData("Front Right: ", frontRight.getCurrentPosition())
+                .addData("Back Right: ", backRight.getCurrentPosition())
+                .addData("Back Left: ", backLeft.getCurrentPosition());
+        myOpMode.telemetry.update();
     }
     public void DriveByEncoderTicks(int forwardTicks, int strafeTicks, int rotateTicks, double speed) {
         SetDriveChainMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

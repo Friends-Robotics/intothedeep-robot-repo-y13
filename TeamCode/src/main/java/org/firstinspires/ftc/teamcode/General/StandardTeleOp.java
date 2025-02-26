@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.General;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.robot.Robot;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -123,12 +124,11 @@ public class StandardTeleOp extends LinearOpMode {
     }
 
     protected void ApplyInput(){
-        //robot.SetViperSlidePos(desiredRevs);
+        robot.SetViperSlideMovement(slowModeMultiplier, viperSlideMovement);
         robot.SetIntakeMotorMovement(intakeMotorMovement);
         robot.DriveChain(slowModeMultiplier, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         robot.SetClawPos(clawClosed);
-        robot.SetFlipMotorPos(flipMotorOut);
-        robot.SetDrawerSlidePos(drawerSlideOut);
+        robot.IntakeSystem(drawerSlideOut, flipMotorOut);
     }
 
     protected void SendTelemetry(){
@@ -139,14 +139,14 @@ public class StandardTeleOp extends LinearOpMode {
 
         telemetry.addLine("GAMEPAD 2").
                 addData("\nRIGHT TRIGGER STATUS", gamepad2.right_trigger)
-                .addData("\n Left x axis", gamepad2.left_stick_x)
-                .addData("\nLEFT TRIGGER STATUS", gamepad2.left_trigger)
-                .addData("\nTRIANGLE", gamepad2.triangle)
-                .addData("\nCIRCLE", gamepad2.circle);
+                .addData("\n LEFT STICK X", gamepad2.left_stick_x)
+                .addData("\nLEFT TRIGGER STATUS", gamepad2.left_trigger);
+
         telemetry.addLine("\nPOSITIONS/DIRECTIONS")
                 .addData("\nSLOWMODE MULTIPLIER", slowModeMultiplier)
                 .addData("\nCLAW CLOSED?", clawClosed)
-                .addData("\nVIPER SLIDE MOVEMENT", viperSlideMovement);
+                .addData("\nVIPER SLIDE MOVEMENT", viperSlideMovement)
+                .addData("\nINTAKE MOTOR MOVEMENT", intakeMotorMovement);
         telemetry.update();
     }
 }

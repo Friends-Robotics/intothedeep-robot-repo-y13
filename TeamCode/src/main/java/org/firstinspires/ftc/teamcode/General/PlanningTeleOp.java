@@ -13,7 +13,7 @@ public class PlanningTeleOp extends StandardTeleOp {
         while(opModeIsActive()){
             ReceiveInput();
             ApplyInput();
-            SendTelemetry();
+            //SendTelemetry();
 
             sleep(20);
         }
