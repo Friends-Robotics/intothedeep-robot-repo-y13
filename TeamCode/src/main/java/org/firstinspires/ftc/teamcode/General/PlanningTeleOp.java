@@ -21,7 +21,7 @@ public class PlanningTeleOp extends StandardTeleOp {
     }
 
     @Override
-    protected void ReceiveInput() {
+    protected void ReceiveInput(){
         super.ReceiveInput();
         if(gamepad1.circle) {
             robot.SetDriveChainMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

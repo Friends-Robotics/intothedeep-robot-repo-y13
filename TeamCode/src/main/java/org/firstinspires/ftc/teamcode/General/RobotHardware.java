@@ -240,6 +240,11 @@ public class RobotHardware {
             leftFlipMotor.setPosition(0.28);
         }
     }
+
+    public void SetFinalFlipMotorPos(){
+        rightFlipMotor.setPosition(0.9);
+        leftFlipMotor.setPosition(0.1);
+    }
     public void SetViperSlidePos(double revsFromBottom){
         int encoderCountsFromBottom = (int)Math.round(revsFromBottom * ViperSlideMotorEncoderResolution);
         rightViperSlide.setTargetPosition(encoderCountsFromBottom);
@@ -250,5 +255,11 @@ public class RobotHardware {
     public void IntakeSystem(boolean slideOut, boolean flipMotorOut) {
         SetFlipMotorPos(flipMotorOut);
         SetDrawerSlidePos(slideOut);
+    }
+
+    public void FinalFold() throws InterruptedException {
+        SetFinalFlipMotorPos();
+        Thread.sleep(500);
+        SetDrawerSlidePos(false);
     }
 }

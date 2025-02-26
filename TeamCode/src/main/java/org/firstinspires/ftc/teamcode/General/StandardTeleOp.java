@@ -86,6 +86,14 @@ public class StandardTeleOp extends LinearOpMode {
             drawerSlideOut = false;
         }
 
+        if(gamepad2.touchpad){
+            try {
+                robot.FinalFold();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         if(gamepad2.triangle){
             flipMotorOut = true;
         }
