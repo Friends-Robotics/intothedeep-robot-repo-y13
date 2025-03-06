@@ -13,12 +13,6 @@ enum ViperSlideDirections {
     NONE
 }
 
-enum FlipMotorPos{
-    IN,
-    OUT,
-    HANG
-}
-
 enum IntakeMotorStates{
     IN,
     OUT,
@@ -97,7 +91,7 @@ public class RobotHardware {
         rightViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         SetClawPos(true);
-        IntakeSystem(false, FlipMotorPos.IN);
+        IntakeSystem(false, false);
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
     }
@@ -120,7 +114,7 @@ public class RobotHardware {
 
         frontLeftPower *= slowModeMult;
         backLeftPower *= slowModeMult;
-        frontRightPower *= slowModeMult;
+        frontRightPower *= slowModeMult;//bad
         backRightPower *= slowModeMult;
 
 
@@ -129,23 +123,27 @@ public class RobotHardware {
         frontRight.setPower(frontRightPower);
         backRight.setPower(backRightPower);
 
-        if(myOpMode.getClass() == PlanningTeleOp.class) {
-            myOpMode.telemetry.addLine("Current motor positions in ticks")
-                    .addData("Front Left: ", frontLeft.getCurrentPosition())
-                    .addData("Front Right: ", frontRight.getCurrentPosition())
-                    .addData("Back Right: ", backRight.getCurrentPosition())
-                    .addData("Back Left: ", backLeft.getCurrentPosition());
-        }
+        myOpMode.telemetry.addLine("Current motor positions in ticks")
+                .addData("Front Left: ", frontLeft.getCurrentPosition())
+                .addData("Front Right: ", frontRight.getCurrentPosition())
+                .addData("Back Right: ", backRight.getCurrentPosition())
+                .addData("Back Left: ", backLeft.getCurrentPosition());
         myOpMode.telemetry.update();
     }
-    public void DriveByEncoderTicks(int flTicks, int frTicks, int brTicks, int blTicks) {
+    public void DriveByEncoderTicks(int forwardTicks, int strafeTicks, int rotateTicks, double speed) {
         SetDriveChainMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        // Calculate the target positions for mecanum movement
+        int frontLeftTarget = forwardTicks + strafeTicks + rotateTicks;
+        int backLeftTarget = forwardTicks - strafeTicks + rotateTicks;
+        int frontRightTarget = forwardTicks - strafeTicks - rotateTicks;
+        int backRightTarget = forwardTicks + strafeTicks - rotateTicks;
+
         // Set target positions
-        frontLeft.setTargetPosition(flTicks);
-        frontRight.setTargetPosition(frTicks);
-        backRight.setTargetPosition(brTicks);
-        backLeft.setTargetPosition(blTicks);
+        frontLeft.setTargetPosition(frontLeftTarget);
+        backLeft.setTargetPosition(backLeftTarget);
+        frontRight.setTargetPosition(frontRightTarget);
+        backRight.setTargetPosition(backRightTarget);
 
         // Set mode to RUN_TO_POSITION
         SetDriveChainMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -207,12 +205,12 @@ public class RobotHardware {
     public void SetIntakeMotorMovement(IntakeMotorStates intakeMotorMovement){
         switch(intakeMotorMovement){
             case IN:
-                intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-                intakeMotor.setPower(0.4);
-                break;
-            case OUT:
                 intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
                 intakeMotor.setPower(0.3);
+                break;
+            case OUT:
+                intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+                intakeMotor.setPower(0.4);
                 break;
             case NONE:
                 intakeMotor.setPower(0);
@@ -228,19 +226,20 @@ public class RobotHardware {
             leftSlideMotor.setPosition(1);
         }
     }
-    public void SetFlipMotorPos(FlipMotorPos flipMotorPos){
-        if (flipMotorPos == FlipMotorPos.OUT) {
+    public void SetFlipMotorPos(boolean flipMotorOut){
+        if(flipMotorOut){
             rightFlipMotor.setPosition(0);
             leftFlipMotor.setPosition(1);
         }
-        else if(flipMotorPos == FlipMotorPos.IN){
+        else{
             rightFlipMotor.setPosition(0.72);
             leftFlipMotor.setPosition(0.28);
         }
-        else if(flipMotorPos == FlipMotorPos.HANG){
-            rightFlipMotor.setPosition(0.9);
-            leftFlipMotor.setPosition(0.1);
-        }
+    }
+
+    public void SetFinalFlipMotorPos(){
+        rightFlipMotor.setPosition(0.9);
+        leftFlipMotor.setPosition(0.1);
     }
     public void SetViperSlidePos(double revsFromBottom){
         int encoderCountsFromBottom = (int)Math.round(revsFromBottom * ViperSlideMotorEncoderResolution);
@@ -249,8 +248,14 @@ public class RobotHardware {
         rightViperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftViperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
-    public void IntakeSystem(boolean slideOut, FlipMotorPos flipMotorOut) {
+    public void IntakeSystem(boolean slideOut, boolean flipMotorOut) {
         SetFlipMotorPos(flipMotorOut);
         SetDrawerSlidePos(slideOut);
+    }
+
+    public void FinalFold() throws InterruptedException {
+        SetFinalFlipMotorPos();
+        Thread.sleep(500);
+        SetDrawerSlidePos(false);
     }
 }

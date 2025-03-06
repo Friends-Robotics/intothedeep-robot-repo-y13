@@ -12,7 +12,19 @@ public class GreedyAuto extends LinearOpMode {
         robot.init(true);
         waitForStart();
 
-        robot.DriveByEncoderTicks(-563, -696, -728, -713);
+        //Hanging specimen at the start
+        robot.SetViperSlidePos(RobotHardware.TopRungRevs);
+        robot.DriveByEncoderTicks(CalculateForwardTicks(0.6), 0, 0, 0.6);
+        robot.SetViperSlidePos(RobotHardware.TopRungRevs - 0.5);
+        robot.SetClawPos(false);
+
+        FromHangingToObservationZonePickup();
+        FromObservationZonePickupToHang();
+        FromHangingToObservationZonePickup();
+        FromHangingToObservationZonePickup();
+
+        robot.DriveByEncoderTicks(0,CalculateStrafeTicks(0.9144), 0,0.6);
+        robot.DriveByEncoderTicks(CalculateForwardTicks(-0.6604), 0, 0, 0.6);
     }
 
     private int CalculateForwardTicks(double forwardsInMeters) {
@@ -33,9 +45,23 @@ public class GreedyAuto extends LinearOpMode {
     }
 
     private void FromHangingToObservationZonePickup(){
+        robot.DriveByEncoderTicks(0,0,1400,0.6);
+        robot.DriveByEncoderTicks(0,CalculateStrafeTicks(-0.9144), 0,0.6);
+        robot.DriveByEncoderTicks(CalculateForwardTicks(0.6), 0, 0, 0.6);
+        robot.SetClawPos(true);
+        robot.SetViperSlidePos(RobotHardware.PickUpFromWallRevs + 0.25);
     }
 
     private void FromObservationZonePickupToHang(){
+        new Thread(() -> {
+            robot.SetViperSlidePos(RobotHardware.BottomRevs);
+        }).start();
+        robot.DriveByEncoderTicks(0,0,1400, 0.6);
+        robot.DriveByEncoderTicks(CalculateForwardTicks((2 * 0.6096) - 0.10),CalculateStrafeTicks(-0.9144), 0, 0.6);
+        robot.SetViperSlidePos(RobotHardware.TopRungRevs);
+        robot.DriveByEncoderTicks(CalculateForwardTicks(0.1), 0,0,0.2);
+        robot.SetViperSlidePos(RobotHardware.TopRungRevs - 0.5);
+        robot.SetClawPos(false);
     }
 
 
