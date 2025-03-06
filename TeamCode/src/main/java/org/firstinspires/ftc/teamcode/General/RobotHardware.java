@@ -151,10 +151,10 @@ public class RobotHardware {
         SetDriveChainMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Set power (ensure all wheels move at the same rate)
-        frontLeft.setPower(0.35);
-        backLeft.setPower(0.35);
-        frontRight.setPower(0.35);
-        backRight.setPower(0.35);
+        frontLeft.setPower(0.2);
+        backLeft.setPower(0.2);
+        frontRight.setPower(0.2);
+        backRight.setPower(0.2);
 
         // Wait until all motors reach their target
         while (myOpMode.opModeIsActive() &&
