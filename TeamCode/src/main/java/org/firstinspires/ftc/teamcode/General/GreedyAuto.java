@@ -8,35 +8,46 @@ public class GreedyAuto extends LinearOpMode {
 
     RobotHardware robot = new RobotHardware(this);
     @Override
-    public void runOpMode(){
+    public void runOpMode() {
         robot.init(true);
         waitForStart();
 
-        robot.DriveByEncoderTicks(-563, -696, -728, -713);
+        robot.DriveByEncoderTicks(-563, -696, -728, -713, 0.4);
+        for(int i = 0; i < 2; i++){
+            HangingToBullCharge();
+            BullChargeToPickup();
+            PickToOutALittle();
+            Rotate180();
+            OutALittleToHang();
+        }
+        Ending();
     }
 
-    private int CalculateForwardTicks(double forwardsInMeters) {
-        return (int) ((-forwardsInMeters/ RobotHardware.CircumferenceOfWheelInMeters) * RobotHardware.WheelMotorEncoderResolution);
+    void HangingToBullCharge(){
+        robot.DriveByEncoderTicks(841, -842, 931, -905, 0.3);
     }
 
-    private int CalculateStrafeTicks(double strafeInMeters) {
-        return (int) ((-strafeInMeters * Math.sqrt(2) / RobotHardware.CircumferenceOfWheelInMeters) * RobotHardware.WheelMotorEncoderResolution);
+    void BullChargeToPickup(){
+        robot.DriveByEncoderTicks(-605, -705, -709, -713, 0.8);
     }
 
-    private int CalculateRotateTicks(double degreesClockwise) {
-        // Calculate the arc length the wheels need to travel
-        double turningDistance = (Math.PI * RobotHardware.WheelbaseInMeters) * (degreesClockwise / 360.0);
-
-        // Convert distance into encoder ticks
-        return (int) ((turningDistance / RobotHardware.CircumferenceOfWheelInMeters)
-                * RobotHardware.WheelMotorEncoderResolution * 2); // Multiply by 2 for mecanum turning
+    void PickToOutALittle(){
+        robot.DriveByEncoderTicks(208, 280, 252, 266, 0.25);
     }
 
-    private void FromHangingToObservationZonePickup(){
+    void OutALittleToHang(){
+        robot.DriveByEncoderTicks(588, -1350, 597, -1369, 0.3);
     }
 
-    private void FromObservationZonePickupToHang(){
+    void ForwardALittle(){
+        robot.DriveByEncoderTicks(-57,-71,-91, -81, 0.2);
     }
 
+    void Rotate180(){
+        robot.DriveByEncoderTicks(1328, -1385, -1442, 1403, 0.35);
+    }
 
+    void Ending(){
+        robot.DriveByEncoderTicks(-1131, 1725, -1139, 1671, 0.9);
+    }
 }

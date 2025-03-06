@@ -130,29 +130,21 @@ public class RobotHardware {
                 .addData("Back Left: ", backLeft.getCurrentPosition());
         myOpMode.telemetry.update();
     }
-    public void DriveByEncoderTicks(int forwardTicks, int strafeTicks, int rotateTicks, double speed) {
-        SetDriveChainMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        // Calculate the target positions for mecanum movement
-        int frontLeftTarget = forwardTicks + strafeTicks + rotateTicks;
-        int backLeftTarget = forwardTicks - strafeTicks + rotateTicks;
-        int frontRightTarget = forwardTicks - strafeTicks - rotateTicks;
-        int backRightTarget = forwardTicks + strafeTicks - rotateTicks;
-
+    public void DriveByEncoderTicks(int flTicks, int frTicks, int brTicks, int blTicks, double speed) {
         // Set target positions
-        frontLeft.setTargetPosition(frontLeftTarget);
-        backLeft.setTargetPosition(backLeftTarget);
-        frontRight.setTargetPosition(frontRightTarget);
-        backRight.setTargetPosition(backRightTarget);
+        frontLeft.setTargetPosition(frontLeft.getCurrentPosition() + flTicks);
+        backLeft.setTargetPosition(backLeft.getCurrentPosition() + blTicks);
+        frontRight.setTargetPosition(frontRight.getCurrentPosition() + frTicks);
+        backRight.setTargetPosition(backRight.getCurrentPosition() + brTicks);
 
         // Set mode to RUN_TO_POSITION
         SetDriveChainMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Set power (ensure all wheels move at the same rate)
-        frontLeft.setPower(0.2);
-        backLeft.setPower(0.2);
-        frontRight.setPower(0.2);
-        backRight.setPower(0.2);
+        frontLeft.setPower(speed);
+        backLeft.setPower(speed);
+        frontRight.setPower(speed);
+        backRight.setPower(speed);
 
         // Wait until all motors reach their target
         while (myOpMode.opModeIsActive() &&
@@ -163,12 +155,6 @@ public class RobotHardware {
             myOpMode.telemetry.addData("BR Target", backRight.getTargetPosition());
             myOpMode.telemetry.update();
         }
-
-        // Stop all motors
-        frontLeft.setPower(0);
-        backLeft.setPower(0);
-        frontRight.setPower(0);
-        backRight.setPower(0);
     }
     public void SetClawPos(boolean clawClosed){
         if(clawClosed){
