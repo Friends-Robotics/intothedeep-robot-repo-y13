@@ -13,8 +13,7 @@ public class StandardTeleOp extends LinearOpMode {
     static ViperSlideDirections viperSlideMovement = ViperSlideDirections.NONE;
     static IntakeMotorStates intakeMotorMovement = IntakeMotorStates.NONE;
     static boolean drawerSlideOut = false;
-    static FlipMotorPos flipMotorPosition = FlipMotorPos.IN;
-    static boolean climb = false;
+    static boolean flipMotorOut = false;
 //    static int desiredRevs;
 //    private static final int  topRungRevs = 6;
 //    private static final int middleRungRevs = 3;
@@ -69,11 +68,11 @@ public class StandardTeleOp extends LinearOpMode {
 
         if(gamepad2.dpad_up){
             drawerSlideOut = true;
-            flipMotorPosition = FlipMotorPos.OUT;
+            flipMotorOut = true;
         }
         else if(gamepad2.dpad_down){
             drawerSlideOut = false;
-            flipMotorPosition = FlipMotorPos.IN;
+            flipMotorOut = false;
         }
 
         if(gamepad2.square){
@@ -83,14 +82,19 @@ public class StandardTeleOp extends LinearOpMode {
             drawerSlideOut = false;
         }
 
+        if(gamepad2.touchpad){
+            try {
+                robot.FinalFold();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         if(gamepad2.triangle){
-            flipMotorPosition = FlipMotorPos.OUT;
+            flipMotorOut = true;
         }
         else if(gamepad2.circle){
-            flipMotorPosition = FlipMotorPos.IN;
-        }
-        else if(gamepad2.touchpad){
-            flipMotorPosition = FlipMotorPos.HANG;
+            flipMotorOut = false;
         }
 
 //            if(gamepad1.dpad_up){
@@ -115,11 +119,11 @@ public class StandardTeleOp extends LinearOpMode {
     }
 
     protected void ApplyInput(){
-        robot.IntakeSystem(drawerSlideOut, flipMotorPosition);
         robot.SetViperSlideMovement(slowModeMultiplier, viperSlideMovement);
         robot.SetIntakeMotorMovement(intakeMotorMovement);
         robot.DriveChain(slowModeMultiplier, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         robot.SetClawPos(clawClosed);
+        robot.IntakeSystem(drawerSlideOut, flipMotorOut);
     }
 
     protected void SendTelemetry(){
