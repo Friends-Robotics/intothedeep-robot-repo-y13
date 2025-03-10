@@ -187,6 +187,10 @@ public class RobotHardware {
                 rightViperSlide.setPower(0.08);
                 break;
         }
+
+        myOpMode.telemetry.addLine("\nViper Slide Ticks\n")
+                .addData("Left Viper Slide: ", leftViperSlide.getCurrentPosition())
+                .addData("Right Viper Slide: ", rightViperSlide.getCurrentPosition());
     }
     public void SetIntakeMotorMovement(IntakeMotorStates intakeMotorMovement){
         switch(intakeMotorMovement){
