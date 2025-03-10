@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.General;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.robot.Robot;
+
 @TeleOp(name="StandardTeleOp", group="Robot")
 public class StandardTeleOp extends LinearOpMode {
 
@@ -14,6 +16,7 @@ public class StandardTeleOp extends LinearOpMode {
     static IntakeMotorStates intakeMotorMovement = IntakeMotorStates.NONE;
     static boolean drawerSlideOut = false;
     static boolean flipMotorOut = false;
+    static int desiredRevs = 0;
 
     @Override
     public void runOpMode()
@@ -92,15 +95,15 @@ public class StandardTeleOp extends LinearOpMode {
             flipMotorOut = false;
         }
 
-//            if(gamepad1.dpad_up){
-//                desiredRevs = topRungRevs;
-//            }
-//            else if(gamepad1.dpad_right){
-//                desiredRevs = middleRungRevs;
-//            }
-//            else if(gamepad1.dpad_down) {
-//                desiredRevs = bottomRevs;
-//            }
+        if(gamepad1.dpad_up){
+            desiredRevs = RobotHardware.TopRungRevs;
+        }
+        else if(gamepad1.dpad_down){
+            desiredRevs = RobotHardware.BottomRevs;
+        }
+        else{
+            desiredRevs = -1;
+        }
 
         if(gamepad2.right_bumper){
             intakeMotorMovement = IntakeMotorStates.IN;
@@ -114,7 +117,12 @@ public class StandardTeleOp extends LinearOpMode {
     }
 
     protected void ApplyInput(){
-        robot.SetViperSlideMovement(slowModeMultiplier, viperSlideMovement);
+        if(desiredRevs == -1){
+            robot.SetViperSlidePos(desiredRevs);
+        }
+        else{
+            robot.SetViperSlideMovement(slowModeMultiplier, viperSlideMovement);
+        }
         robot.SetIntakeMotorMovement(intakeMotorMovement);
         robot.DriveChain(slowModeMultiplier, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         robot.SetClawPos(clawClosed);

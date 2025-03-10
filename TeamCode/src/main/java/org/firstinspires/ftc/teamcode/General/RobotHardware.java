@@ -37,7 +37,6 @@ public class RobotHardware {
     public static final double WheelMotorEncoderResolution = 336;
     public static final double WheelbaseInMeters = 0.388;
     public static final int TopRungRevs = 6;
-    public static final int PickUpFromWallRevs = 3;
     public static final int BottomRevs = 0;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
