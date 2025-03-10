@@ -27,6 +27,10 @@ public class PlanningTeleOp extends StandardTeleOp {
             robot.SetDriveChainMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.SetDriveChainMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+        if(gamepad1.cross){
+            robot.SetViperSlideModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.SetViperSlideModes(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
     }
 }
 

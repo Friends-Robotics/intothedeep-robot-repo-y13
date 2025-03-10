@@ -78,14 +78,16 @@ public class RobotHardware {
         if (resetEncoders) {
             SetDriveChainMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             SetDriveChainMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            SetViperSlideModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            SetViperSlideModes(DcMotor.RunMode.RUN_USING_ENCODER);
+
         }
         else{
             SetDriveChainMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            SetViperSlideModes(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftViperSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightViperSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         leftViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -96,6 +98,10 @@ public class RobotHardware {
         myOpMode.telemetry.addData(">", "Hardware Initialized");
     }
 
+    public void SetViperSlideModes(DcMotor.RunMode runMode){
+        leftViperSlide.setMode(runMode);
+        rightViperSlide.setMode(runMode);
+    }
     public void SetDriveChainMotorMode(DcMotor.RunMode runMode){
         frontLeft.setMode(runMode);
         backLeft.setMode(runMode);
