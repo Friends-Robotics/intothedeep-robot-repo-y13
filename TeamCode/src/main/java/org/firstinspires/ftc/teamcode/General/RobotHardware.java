@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 enum ViperSlideDirections {
     UPWARDS,
     DOWNWARDS,
@@ -36,8 +34,9 @@ public class RobotHardware {
     public static final double CircumferenceOfWheelInMeters = 0.2356;
     public static final double WheelMotorEncoderResolution = 336;
     public static final double WheelbaseInMeters = 0.388;
-    public static final int TopRungRevs = 6;
-    public static final int BottomRevs = 0;
+    public static final int TopRungRevsLeft = 3212;
+    public static final int TopRungRevsRight = 3076;
+    public static final int BottomEncoders = 20;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public RobotHardware(LinearOpMode opmode)
@@ -69,17 +68,24 @@ public class RobotHardware {
         rightSlideMotor.scaleRange(0.5, 0.75);
         leftSlideMotor.scaleRange(0.25, 0.5);
 
+        leftViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightViperSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
+
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         if (resetEncoders) {
             SetDriveChainMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             SetDriveChainMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
             SetViperSlideModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             SetViperSlideModes(DcMotor.RunMode.RUN_USING_ENCODER);
-
         }
         else{
             SetDriveChainMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -88,8 +94,10 @@ public class RobotHardware {
 
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        leftViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightViperSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+
 
         SetClawPos(true);
         IntakeSystem(false, false);
@@ -127,12 +135,6 @@ public class RobotHardware {
         backLeft.setPower(backLeftPower);
         frontRight.setPower(frontRightPower);
         backRight.setPower(backRightPower);
-
-        myOpMode.telemetry.addLine("Current motor positions in ticks")
-                .addData("Front Left: ", frontLeft.getCurrentPosition())
-                .addData("Front Right: ", frontRight.getCurrentPosition())
-                .addData("Back Right: ", backRight.getCurrentPosition())
-                .addData("Back Left: ", backLeft.getCurrentPosition());
         myOpMode.telemetry.update();
     }
     public void DriveByEncoderTicks(int flTicks, int frTicks, int brTicks, int blTicks, double speed) {
@@ -160,6 +162,11 @@ public class RobotHardware {
             myOpMode.telemetry.addData("BR Target", backRight.getTargetPosition());
             myOpMode.telemetry.update();
         }
+
+        frontLeft.setPower(0);
+        backLeft.setPower(0);
+        frontRight.setPower(0);
+        backRight.setPower(0);
     }
     public void SetClawPos(boolean clawClosed){
         if(clawClosed){
@@ -170,6 +177,7 @@ public class RobotHardware {
         }
     }
     public void SetViperSlideMovement(double slowModeMult, ViperSlideDirections viperSlideMovement){
+        SetViperSlideModes(DcMotor.RunMode.RUN_USING_ENCODER);
         switch(viperSlideMovement){
             case UPWARDS:
                 leftViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -188,14 +196,14 @@ public class RobotHardware {
             case NONE:
                 leftViperSlide.setDirection(DcMotorSimple.Direction.FORWARD);
                 rightViperSlide.setDirection(DcMotorSimple.Direction.REVERSE);
-                leftViperSlide.setPower(0.08);
-                rightViperSlide.setPower(0.08);
+                leftViperSlide.setPower(0.0);
+                rightViperSlide.setPower(0.0);
                 break;
         }
-
         myOpMode.telemetry.addLine("\nViper Slide Ticks\n")
                 .addData("Left Viper Slide: ", leftViperSlide.getCurrentPosition())
                 .addData("Right Viper Slide: ", rightViperSlide.getCurrentPosition());
+        myOpMode.telemetry.update();
     }
     public void SetIntakeMotorMovement(IntakeMotorStates intakeMotorMovement){
         switch(intakeMotorMovement){
@@ -236,12 +244,13 @@ public class RobotHardware {
         rightFlipMotor.setPosition(0.9);
         leftFlipMotor.setPosition(0.1);
     }
-    public void SetViperSlidePos(double revsFromBottom){
-        int encoderCountsFromBottom = (int)Math.round(revsFromBottom * ViperSlideMotorEncoderResolution);
-        rightViperSlide.setTargetPosition(encoderCountsFromBottom);
-        leftViperSlide.setTargetPosition(-encoderCountsFromBottom);
-        rightViperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftViperSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    public void SetViperSlidePos(int encoderCountsFromBottomLeft, int encoderCountsFromBottomRight){
+        rightViperSlide.setTargetPosition(encoderCountsFromBottomRight);
+        leftViperSlide.setTargetPosition(encoderCountsFromBottomLeft);
+        SetViperSlideModes(DcMotor.RunMode.RUN_TO_POSITION);
+
+        rightViperSlide.setPower(1.0);
+        leftViperSlide.setPower(1.0);
     }
     public void IntakeSystem(boolean slideOut, boolean flipMotorOut) {
         SetFlipMotorPos(flipMotorOut);

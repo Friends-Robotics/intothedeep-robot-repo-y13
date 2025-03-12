@@ -14,11 +14,13 @@ public class GreedyAuto extends LinearOpMode {
 
         robot.DriveByEncoderTicks(-563, -696, -728, -713, 0.4);
         for(int i = 0; i < 2; i++){
+            Rotate180();
             HangingToBullCharge();
             BullChargeToPickup();
             PickToOutALittle();
             Rotate180();
             OutALittleToHang();
+            ForwardALittle();
         }
         Ending();
     }

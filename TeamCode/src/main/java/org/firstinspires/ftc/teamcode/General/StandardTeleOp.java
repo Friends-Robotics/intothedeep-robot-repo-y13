@@ -10,13 +10,15 @@ public class StandardTeleOp extends LinearOpMode {
     // Create a RobotHardware object to be used to access robot hardware.
     // Prefix any hardware functions with "robot." to access this class.
     RobotHardware robot = new RobotHardware(this);
-    static double slowModeMultiplier = 0;
-    static boolean clawClosed = true;
-    static ViperSlideDirections viperSlideMovement = ViperSlideDirections.NONE;
-    static IntakeMotorStates intakeMotorMovement = IntakeMotorStates.NONE;
-    static boolean drawerSlideOut = false;
-    static boolean flipMotorOut = false;
-    static int desiredRevs = 0;
+    double slowModeMultiplier = 0;
+    boolean clawClosed = true;
+    ViperSlideDirections viperSlideMovement = ViperSlideDirections.NONE;
+    IntakeMotorStates intakeMotorMovement = IntakeMotorStates.NONE;
+    boolean drawerSlideOut = false;
+    boolean flipMotorOut = false;
+    int desiredTicksLeft = 0;
+    int desiredTicksRight = 0;
+    boolean manualViperControl = true;
 
     @Override
     public void runOpMode()
@@ -56,9 +58,11 @@ public class StandardTeleOp extends LinearOpMode {
         //Getting viper slide directions
         if(gamepad1.right_bumper){
             viperSlideMovement = ViperSlideDirections.UPWARDS;
+            manualViperControl = true;
         }
         else if (gamepad1.left_bumper) {
             viperSlideMovement = ViperSlideDirections.DOWNWARDS;
+            manualViperControl = true;
         }
         else{
             viperSlideMovement = ViperSlideDirections.NONE;
@@ -96,13 +100,14 @@ public class StandardTeleOp extends LinearOpMode {
         }
 
         if(gamepad1.dpad_up){
-            desiredRevs = RobotHardware.TopRungRevs;
+            desiredTicksLeft = RobotHardware.TopRungRevsLeft;
+            desiredTicksRight = RobotHardware.TopRungRevsRight;
+            manualViperControl = false;
         }
         else if(gamepad1.dpad_down){
-            desiredRevs = RobotHardware.BottomRevs;
-        }
-        else{
-            desiredRevs = -1;
+            desiredTicksLeft = RobotHardware.BottomEncoders;
+            desiredTicksRight = RobotHardware.BottomEncoders;
+            manualViperControl = false;
         }
 
         if(gamepad2.right_bumper){
@@ -117,12 +122,13 @@ public class StandardTeleOp extends LinearOpMode {
     }
 
     protected void ApplyInput(){
-        if(desiredRevs == -1){
-            robot.SetViperSlidePos(desiredRevs);
-        }
-        else{
+        if(manualViperControl){
             robot.SetViperSlideMovement(slowModeMultiplier, viperSlideMovement);
         }
+        else{
+            robot.SetViperSlidePos(desiredTicksLeft, desiredTicksRight);
+        }
+        
         robot.SetIntakeMotorMovement(intakeMotorMovement);
         robot.DriveChain(slowModeMultiplier, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         robot.SetClawPos(clawClosed);
@@ -133,7 +139,8 @@ public class StandardTeleOp extends LinearOpMode {
         telemetry.addLine("GAMEPAD 1")
                 .addData("\nLEFT STICK Y", -gamepad1.left_stick_y)
                 .addData("\nLEFT STICK X", gamepad1.left_stick_x)
-                .addData("\nRIGHT STICK X", gamepad1.right_stick_x);
+                .addData("\nRIGHT STICK X", gamepad1.right_stick_x)
+                .addData("\nDpad up", gamepad1.dpad_up);
 
         telemetry.addLine("GAMEPAD 2").
                 addData("\nRIGHT TRIGGER STATUS", gamepad2.right_trigger)
